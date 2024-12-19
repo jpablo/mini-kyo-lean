@@ -1,0 +1,10 @@
+name = "mini-kyo-lean"
+version = "0.1.0"
+defaultTargets = ["mini-kyo-lean"]
+
+[[lean_lib]]
+name = "MiniKyoLean"
+
+[[lean_exe]]
+name = "mini-kyo-lean"
+root = "Main"
