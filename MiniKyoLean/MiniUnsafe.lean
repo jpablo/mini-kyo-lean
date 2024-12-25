@@ -49,7 +49,7 @@ namespace kernel
     def pure {A} (value : A) : Kyo A :=
       Pure value
 
-      def suspend {I O E} [ae: ArrowEffect E I O] (tag : Tag E) (input : I) : Kyo O :=
+    def suspend {I O E} [ArrowEffect E I O] (tag : Tag E) (input : I) : Kyo O :=
       Suspend tag input pure
 
     def continue_ {A B} (x : Kyo A) (f : Kyo A -> Kyo B) : Kyo B :=
@@ -112,8 +112,8 @@ namespace Abort
   instance {V} [tagV: Tag V] : Tag (Abort V) where
     tag := s!"Abort({tagV.tag})"
 
-  def fail {V : Type} [Tag V] (value : V) : Kyo Empty :=
-    Kyo.suspend (E := Abort V) inferInstance value
+  def fail {V} [Tag V] (value : V) : Kyo Empty :=
+    suspend (E := Abort V) inferInstance value
 
   def run {V A} [Tag V] (v : Kyo A) : Kyo (Result V A) :=
     handle (O := Empty) (E := Abort V)
@@ -132,17 +132,16 @@ inductive Env (V : Type) where
 
 namespace Env
 
-  instance {V}: ArrowEffect (E := Env V) (I := Unit) (O := V) where
+  instance {V}: ArrowEffect (Env V) I V where
 
   instance {V} [tagV: Tag V] : Tag (Env V) where
     tag := s!"Env({tagV.tag})"
 
   def get {V} [Tag V] : Kyo V :=
-    Kyo.suspend (E := Env V) inferInstance ()
+    suspend (E := Env V) inferInstance ()
 
-  def run {V} [Tag V] {A: Type} (value : V) (v : Kyo A) : Kyo A :=
-    Kyo.handle (I := Unit) (E := Env V)
-      inferInstance v (fun _ cont => cont value)
+  def run {V} [Tag V] {A} (value : V) (v : Kyo A) : Kyo A :=
+    handle (I := Unit) (E := Env V) inferInstance v (fun _ cont => cont value)
 
 end Env
 
@@ -159,24 +158,24 @@ namespace Var
   | Get
   | Set (v : V)
 
-  instance {V}: ArrowEffect (E := Var V) (I := Op V) (O := V) where
+  instance {V}: ArrowEffect (Var V) (Op V) V where
 
   instance {V}  [tagV: Tag V]: Tag (Var V) where
     tag := s!"Var({tagV.tag})"
 
   def get (V) [Tag V] : Kyo V :=
-    Kyo.suspend (I := Op V) (E := Var V) inferInstance Op.Get
+    suspend (I := Op V) (E := Var V) inferInstance Op.Get
 
   def set {V} [Tag V] (value : V) : Kyo Unit :=
-    (Kyo.suspend (O := V) (E := Var V)
-      inferInstance (Op.Set value)).map (fun _ => ())
+    suspend (O := V) (E := Var V) inferInstance (Op.Set value)
+      |>.map (fun _ => ())
 
 
   def run {V A} [Tag V] (state : V) (v : Kyo A) [Tag (Var V)] : Kyo (V × A) :=
     -- Problem: fail to show termination for Var.run.loop
     let rec loop (state : V) (v : Kyo (V × A)) : Kyo (V × A) :=
       handle
-         (E := Var V)
+        (E := Var V)
         (tag := inferInstance) v
         (fun input cont =>
           match input with
@@ -196,13 +195,13 @@ inductive Emit (V : Type) where
 
 namespace Emit
 
-  instance ae {V}: ArrowEffect (E := Emit V) (I := V) (O := Unit) where
+  instance ae {V}: ArrowEffect (Emit V) V Unit where
 
-  instance {V}  [tagV: Tag V]: Tag (Emit V) where
+  instance {V}  [tagV: Tag V] : Tag (Emit V) where
     tag := s!"Emit({tagV.tag})"
 
   def apply {V} [Tag V] (value : V) : Kyo Unit :=
-    Kyo.suspend (tag := inferInstanceAs (Tag (Emit V))) value
+    suspend (tag := inferInstanceAs (Tag (Emit V))) value
 
 
   def run {V A} [Tag V] (v : Kyo A) : Kyo (Array V × A) :=
@@ -222,13 +221,13 @@ end Emit
 
 namespace kIO
 
-  instance {V}: ArrowEffect (E := IO V) (I := Unit) (O := Unit) where
+  instance {V}: ArrowEffect (IO V) Unit Unit where
 
-  instance {V} [tagV: Tag V] : Tag (IO V) where
+  instance {V} [tagV : Tag V] : Tag (IO V) where
     tag := s!"IO({tagV.tag})"
 
   def unit : Kyo Unit :=
-    Kyo.suspend (tag := inferInstanceAs (Tag (IO Unit))) ()
+    suspend (tag := inferInstanceAs (Tag (IO Unit))) ()
 
   -- TODO: this should have signature
   -- def apply {A} [Tag A] (v : IO A) : Kyo A
