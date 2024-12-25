@@ -15,6 +15,14 @@ TODO:
 
 namespace kernel
 
+  /-
+  Using a type class instead of subtypes for ArrowEffects.
+  For example:
+    sealed trait Abort[V] extends ArrowEffect[V, Nothing]
+  is modeled as
+    instance {V} : ArrowEffect (Abort V) v Empty where
+  -/
+
   class ArrowEffect (E I O : Type) where
 
   class Tag (E : Type) where
@@ -24,13 +32,14 @@ namespace kernel
   instance : Tag Int := ⟨"Int"⟩
   instance : Tag Nat := ⟨"Nat"⟩
 
-  inductive Kyo (A : Type) where
-    | Pure (value : A)
+  inductive Kyo : Type -> Type 1 where
+    | Pure (value : A) : Kyo A
 
     | Suspend {E} [ArrowEffect E I O]
         (tag : Tag E)
         (input : I)
         (cont : O -> Kyo A)
+        : Kyo A
   deriving Nonempty
 
 
@@ -49,6 +58,7 @@ namespace kernel
       | Suspend tag input cont =>
         Suspend tag input (fun o => f (cont o))
 
+    -- Problem: fail to show termination for kernel.Kyo.flatMap
     def flatMap {A B} (x : Kyo A) (f : A -> Kyo B) : Kyo B :=
       match x with
       | Pure a => f a
@@ -65,6 +75,8 @@ namespace kernel
       | Pure value => Pure value
       | Suspend tag' input cont =>
         if tag.tag == tag'.tag then
+          -- Problem input has type I✝ but expected type I
+          -- TODO: convince Lean that the type of input is I
           handle tag (f input cont) f
         else
           v.continue_ (fun k => handle tag k f)
@@ -95,7 +107,7 @@ deriving Repr
 
 namespace Abort
 
-  instance {V : Type} : ArrowEffect (E := Abort V) (I := V) (O := Empty) where
+  instance {V} : ArrowEffect (Abort V) v Empty where
 
   instance {V} [tagV: Tag V] : Tag (Abort V) where
     tag := s!"Abort({tagV.tag})"
@@ -161,6 +173,7 @@ namespace Var
 
 
   def run {V A} [Tag V] (state : V) (v : Kyo A) [Tag (Var V)] : Kyo (V × A) :=
+    -- Problem: fail to show termination for Var.run.loop
     let rec loop (state : V) (v : Kyo (V × A)) : Kyo (V × A) :=
       handle
          (E := Var V)
@@ -193,6 +206,7 @@ namespace Emit
 
 
   def run {V A} [Tag V] (v : Kyo A) : Kyo (Array V × A) :=
+    -- Problem: fail to show termination for Emit.run.loop
     let rec loop (acc : Array V) (v : Kyo (Array V × A)) : Kyo (Array V × A) :=
       handle (tag := inferInstanceAs (Tag (Emit V))) v
         (fun input cont =>
