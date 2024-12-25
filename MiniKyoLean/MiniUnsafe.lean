@@ -1,4 +1,18 @@
 
+/-
+Translation of the following Scala code to Lean:
+https://gist.github.com/fwbrasil/7a4c8af789db6b1f0c07a6243616883f
+("mini-unsafe.scala")
+
+TODO:
+
+1. Address non-termination
+2. Replace the usage of .asInstanceOf in handle:
+3. Correct signature of IO
+
+-/
+
+
 namespace kernel
 
   class ArrowEffect (E I O : Type) where
