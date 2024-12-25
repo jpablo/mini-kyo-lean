@@ -14,9 +14,12 @@ the compiler can prove that (B < S₂) <:< (B < (S & S₂))
 2. Replace the usage of .asInstanceOf in handleState:
 val (newState, v) = f(s.input.asInstanceOf, state, s.cont.asInstanceOf)
 
+3. Add more effects
+
 -/
 
 -- Using Coercions to model subtyping
+
 infixl:65 " <: " => CoeOut
 
 def impossible {T : Empty -> Type _} (e) : T e :=
@@ -119,10 +122,10 @@ namespace Eff
       let s := handleState (O := O) tag () v (fun {_: Type} input _ cont => ((), f input cont))
       s.map (fun x => x.snd)
 
-  def eval {A S} [Inhabited A] (v : A < S) : A :=
-    match v with
-    | Pure x => x
-    | _ => panic! "eval: not a Pure"
+    def eval {A S} [Inhabited A] (v : A < S) : A :=
+      match v with
+      | Pure x => x
+      | _ => panic! "eval: not a Pure"
 
 end Eff
 
