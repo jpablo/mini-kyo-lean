@@ -58,28 +58,29 @@ namespace kernel
       | Suspend tag input cont =>
         Suspend tag input (fun o => f (cont o))
 
-    -- Problem: fail to show termination for kernel.Kyo.flatMap
     def flatMap {A B} (x : Kyo A) (f : A -> Kyo B) : Kyo B :=
       match x with
       | Pure a => f a
-      | s@(Suspend tag input cont) =>
-        continue_ s (fun v => flatMap v f)
+      | Suspend tag input cont =>
+        Suspend tag input (fun o => flatMap (cont o) f)
 
     def map {A B} (x : Kyo A) (f : A -> B) : Kyo B :=
       x.flatMap (fun a => pure (f a))
 
-
-    def handle {I O E A} [ArrowEffect E I O] (tag : Tag E) (v : Kyo A)
+    partial def handle {I O E A} [ArrowEffect E I O] (tag : Tag E) (v : Kyo A)
         (f : I -> (O -> Kyo A) -> Kyo A) : Kyo A :=
       match v with
       | Pure value => Pure value
-      | Suspend tag' input cont =>
+      | @Suspend I' O' _ _  _ tag' input cont =>
+        -- Problem input has type I✝ but expected type I (likewise for O)
+        let toI : I' -> I := sorry
+        let toO' : O -> O' := sorry
+        let input' := toI input
+        let cont' := cont ∘ toO'
         if tag.tag == tag'.tag then
-          -- Problem input has type I✝ but expected type I
-          -- TODO: convince Lean that the type of input is I
-          handle tag (f input cont) f
+          handle tag (f input' cont') f
         else
-          v.continue_ (fun k => handle tag k f)
+          Suspend tag' input (fun o => handle tag (cont o) f)
 
     def eval {A} [Inhabited A] (v : Kyo A) : A :=
       match v with
@@ -173,14 +174,14 @@ namespace Var
 
   def run {V A} [Tag V] (state : V) (v : Kyo A) [Tag (Var V)] : Kyo (V × A) :=
     -- Problem: fail to show termination for Var.run.loop
-    let rec loop (state : V) (v : Kyo (V × A)) : Kyo (V × A) :=
-      handle
-        (E := Var V)
-        (tag := inferInstance) v
-        (fun input cont =>
-          match input with
-          | Op.Get => cont state
-          | Op.Set newState => loop newState (cont newState))
+    let rec loop (state : V) (v : Kyo (V × A)) : Kyo (V × A) := sorry
+      -- handle
+      --   (E := Var V)
+      --   (tag := inferInstance) v
+      --   (fun input cont =>
+      --     match input with
+      --     | Op.Get => cont state
+      --     | Op.Set newState => loop newState (cont newState))
     loop state (v.map (fun a => (state, a)))
 
 
@@ -207,9 +208,10 @@ namespace Emit
   def run {V A} [Tag V] (v : Kyo A) : Kyo (Array V × A) :=
     -- Problem: fail to show termination for Emit.run.loop
     let rec loop (acc : Array V) (v : Kyo (Array V × A)) : Kyo (Array V × A) :=
-      handle (tag := inferInstanceAs (Tag (Emit V))) v
-        (fun input cont =>
-          loop (acc.push input) (cont ()))
+      sorry
+      -- handle (tag := inferInstanceAs (Tag (Emit V))) v
+      --   (fun input cont =>
+      --     loop (acc.push input) (cont ()))
     loop #[] (v.map (fun a => (#[], a)))
 
 end Emit
