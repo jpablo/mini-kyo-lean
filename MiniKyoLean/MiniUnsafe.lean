@@ -26,7 +26,7 @@ namespace kernel
   class ArrowEffect (E I O : Type) where
 
   class Tag (E : Type) where
-    tag : String
+    tag : String 
 
   instance : Tag Unit := ⟨"Unit"⟩
   instance : Tag Int := ⟨"Int"⟩
@@ -73,11 +73,11 @@ namespace kernel
       | Pure value => Pure value
       | @Suspend I' O' _ _  _ tag' input cont =>
         -- Problem input has type I✝ but expected type I (likewise for O)
-        let toI : I' -> I := sorry
-        let toO' : O -> O' := sorry
-        let input' := toI input
-        let cont' := cont ∘ toO'
         if tag.tag == tag'.tag then
+          let ii: I' = I := by sorry
+          let oo: O = O' := by sorry
+          let input' := cast ii input
+          let cont' := cont ∘ cast oo
           handle tag (f input' cont') f
         else
           Suspend tag' input (fun o => handle tag (cont o) f)
@@ -114,7 +114,7 @@ namespace Abort
     tag := s!"Abort({tagV.tag})"
 
   def fail {V} [Tag V] (value : V) : Kyo Empty :=
-    suspend (E := Abort V) inferInstance value
+    suspend (E := Abort V) (tag := inferInstance) value
 
   def run {V A} [Tag V] (v : Kyo A) : Kyo (Result V A) :=
     handle (O := Empty) (E := Abort V)
