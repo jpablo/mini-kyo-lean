@@ -113,6 +113,18 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge2.lean`
     via `handleTwoRemoved`, `handleTwoRemoved_obligations`, and
     `handleTwoRemoved_discharge_shape`.
+14. [x] Add nested 3-effect executable composition helpers + validation.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum3.lean`
+    via `lift1`/`lift2`/`lift3`, `handle1`/`handle12`, and validated
+    `Abort + Env + Var` scenarios (`eval3_case1_spec`, `eval3_case2_spec`).
+15. [x] Add 3-step row-aware nested-sum discharge bridge.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`
+    via `handleThreeRemoved`, `handleThreeRemoved_obligations`, and
+    `handleThreeRemoved_discharge_shape`.
+16. [x] Add recursive nested-sum injection typeclass foundation.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectNest.lean`
+    via `Inject`, generic `lift`/`suspend`, and validated stack example
+    (`evalStack_case1_spec`, `evalStack_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

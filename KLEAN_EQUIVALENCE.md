@@ -165,11 +165,26 @@ A replacement is accepted only when each item has either:
   - `handleLeft` / `handleRight`
   - mixed `Abort + Env` validation
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum.lean`.
+- Executable 3-effect composition over nested sums now exists:
+  - `EffectSum3.Effect` (`E1 + (E2 + E3)`)
+  - `lift1` / `lift2` / `lift3`
+  - `handle1` / `handle12`
+  - mixed `Abort + Env + Var` validation
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum3.lean`.
+- Recursive nested-sum injection foundation now exists:
+  - `Inject`
+  - generic `lift` / `suspend`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectNest.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
   - `handleTwoRemoved_discharge_shape`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge2.lean`.
+- Row-aware 3-effect composition now exists:
+  - `handleThreeRemoved`
+  - `handleThreeRemoved_obligations`
+  - `handleThreeRemoved_discharge_shape`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - general n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending`.
+  - general n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending` (current n=2/3 runtime and proof composition exists, and n-ary injection foundation exists, but generic n-ary handling/removal synthesis is still pending).

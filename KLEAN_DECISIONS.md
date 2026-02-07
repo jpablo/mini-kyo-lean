@@ -259,3 +259,99 @@ Add `Discharge2.handleTwoRemoved`, which:
 ### Consequences
 - Two-effect elimination now has a documented and executable typed path.
 - Remaining work is generalized row-indexed handler synthesis/dispatch.
+
+## ADR-0008: Represent 3-effect composition via nested `EffectSum`
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum3.lean`
+
+### Context
+The equivalence checklist requires multi-handler composition examples beyond two
+effects. We already had a binary dispatcher (`EffectSum`), but no concrete
+3-effect runtime artifact.
+
+### Decision
+Introduce `EffectSum3` as nested binary sums:
+- `Effect E1 E2 E3 := E1 + (E2 + E3)`
+- explicit lifts (`lift1`, `lift2`, `lift3`)
+- sequential handlers (`handle1`, `handle12`)
+
+### Why
+- Delivers executable 3-effect composition immediately.
+- Reuses existing typed dispatch machinery.
+- Keeps control-flow and typing behavior transparent while design is in flux.
+
+### Tradeoffs
+- Composition is explicit and right-associated.
+- Still not a general row-driven dispatcher over arbitrary effect counts.
+
+### Consequences
+- We now have executable 2-effect and 3-effect composition evidence.
+- Next step is abstracting over nesting shape toward n-ary row-indexed dispatch.
+
+## ADR-0009: Add 3-step row-aware discharge composition (`Discharge3`)
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`
+
+### Context
+After introducing nested 3-effect runtime composition (`EffectSum3`), we needed
+the same level of explicit row-removal contracts already present for 1-step and
+2-step discharge bridges.
+
+### Decision
+Add `Discharge3.handleThreeRemoved`, with three `Row.Remove` witnesses and
+obligation-shape theorems.
+
+### Why
+- Keeps runtime composition and row-proof contracts aligned.
+- Provides a concrete 3-effect elimination artifact for equivalence tracking.
+- Preserves the staged design while avoiding premature n-ary generalization.
+
+### Tradeoffs
+- API is still explicit and sequential.
+- Boilerplate grows with arity.
+
+### Consequences
+- 1/2/3-step row-aware discharge layers are now all available.
+- Next step is abstracting these staged patterns into reusable n-ary machinery.
+
+## ADR-0010: Introduce recursive nested-sum injection typeclass (`EffectNest.Inject`)
+
+Date: 2026-02-07  
+Status: Accepted (foundation)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectNest.lean`
+
+### Context
+With explicit `lift1`/`lift2`/`lift3` helpers, boilerplate grows linearly with
+stack depth. We needed a reusable mechanism to inject effects into deeper nested
+sums without defining new lift families per arity.
+
+### Decision
+Add `Inject E S` with recursive instances:
+- head injection into `Effect E R`
+- tail recursion into `Effect L R`
+- identity base `Inject E E`
+
+and expose generic `lift` / `suspend`.
+
+### Why
+- Establishes a scalable n-ary composition foundation.
+- Reduces manual injection combinator proliferation.
+- Keeps current runtime encoding intact while enabling future generalization.
+
+### Tradeoffs
+- Membership is currently left-biased.
+- Duplicate effects in a stack may require explicit disambiguation policies.
+
+### Consequences
+- Nested-stack examples can now use generic injection APIs.
+- Next step is matching this with generic n-ary handling/removal APIs.
