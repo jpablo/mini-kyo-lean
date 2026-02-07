@@ -39,6 +39,16 @@ structure Eliminated2 (t1 t2 S out A : Type)
       (Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++
       Row.toRowSet (stackRow out)
 
+/-- Result of eliminating three target effects in sequence from stack `S`. -/
+structure Eliminated3 (t1 t2 t3 S out A : Type)
+    [EffectSig t1] [EffectSig t2] [EffectSig t3] [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out] where
+  program : Pending1 out A
+  discharge :
+    Row.toRowSet (stackRow S) =
+      ((Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++ Row.singletonRowSet t3) ++
+      Row.toRowSet (stackRow out)
+
 /-- Eliminate the first (leftmost) occurrence of one target effect from `S`. -/
 def eliminate
     [EffectSig target] [EffectSig S] [EffectSig out]
@@ -92,6 +102,31 @@ theorem discharge_two
       exact Row.appendRowSet_assoc _ _ _
 
 /--
+Compose the discharge equalities from three elimination steps.
+-/
+theorem discharge_three
+    [EffectSig t1] [EffectSig t2] [EffectSig t3]
+    [EffectSig S] [EffectSig m1] [EffectSig m2] [EffectSig out]
+    [StackRow S] [StackRow m1] [StackRow m2] [StackRow out]
+    (first : Eliminated t1 S m1 A)
+    (second : Eliminated t2 m1 m2 A)
+    (third : Eliminated t3 m2 out A) :
+    Row.toRowSet (stackRow S) =
+      ((Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++ Row.singletonRowSet t3) ++
+      Row.toRowSet (stackRow out) := by
+  calc
+    Row.toRowSet (stackRow S) =
+      (Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++ Row.toRowSet (stackRow m2) := by
+        exact discharge_two first second
+    _ = (Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++
+          (Row.singletonRowSet t3 ++ Row.toRowSet (stackRow out)) := by
+        rw [third.discharge]
+    _ = ((Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++ Row.singletonRowSet t3) ++
+          Row.toRowSet (stackRow out) := by
+        symm
+        exact Row.appendRowSet_assoc _ _ _
+
+/--
 Eliminate two targets in sequence, each by occurrence index in its current stack.
 -/
 def eliminateTwoAt
@@ -137,6 +172,68 @@ def eliminateTwo
     Eliminated2 t1 t2 S out A :=
   eliminateTwoAt (t1 := t1) (t2 := t2) (skip1 := 0) (skip2 := 0)
     (S := S) (mid := mid) (out := out) onFirst onSecond program
+
+/--
+Eliminate three targets in sequence, each by occurrence index in its current stack.
+-/
+def eliminateThreeAt
+    [EffectSig t1] [EffectSig t2] [EffectSig t3]
+    [EffectSig S] [EffectSig m1] [EffectSig m2] [EffectSig out]
+    [StackRow S] [StackRow m1] [StackRow m2] [StackRow out]
+    [SelectOp t1 skip1 S m1] [SelectOpRow t1 skip1 S m1]
+    [SelectOp t2 skip2 m1 m2] [SelectOpRow t2 skip2 m1 m2]
+    [SelectOp t3 skip3 m2 out] [SelectOpRow t3 skip3 m2 out]
+    (onFirst :
+      {X : Type} →
+      (op : EffectSig.Op (E := t1) X) →
+      (EffectSig.Res (E := t1) op → Pending1 m1 A) →
+      Pending1 m1 A)
+    (onSecond :
+      {X : Type} →
+      (op : EffectSig.Op (E := t2) X) →
+      (EffectSig.Res (E := t2) op → Pending1 m2 A) →
+      Pending1 m2 A)
+    (onThird :
+      {X : Type} →
+      (op : EffectSig.Op (E := t3) X) →
+      (EffectSig.Res (E := t3) op → Pending1 out A) →
+      Pending1 out A)
+    (program : Pending1 S A) :
+    Eliminated3 t1 t2 t3 S out A :=
+  let first := eliminateAt (target := t1) (skip := skip1) (S := S) (out := m1) onFirst program
+  let second := eliminateAt (target := t2) (skip := skip2) (S := m1) (out := m2) onSecond first.program
+  let third := eliminateAt (target := t3) (skip := skip3) (S := m2) (out := out) onThird second.program
+  { program := third.program, discharge := discharge_three first second third }
+
+/--
+Eliminate three targets in sequence using first-occurrence semantics for all.
+-/
+def eliminateThree
+    [EffectSig t1] [EffectSig t2] [EffectSig t3]
+    [EffectSig S] [EffectSig m1] [EffectSig m2] [EffectSig out]
+    [StackRow S] [StackRow m1] [StackRow m2] [StackRow out]
+    [SelectOp t1 0 S m1] [SelectOpRow t1 0 S m1]
+    [SelectOp t2 0 m1 m2] [SelectOpRow t2 0 m1 m2]
+    [SelectOp t3 0 m2 out] [SelectOpRow t3 0 m2 out]
+    (onFirst :
+      {X : Type} →
+      (op : EffectSig.Op (E := t1) X) →
+      (EffectSig.Res (E := t1) op → Pending1 m1 A) →
+      Pending1 m1 A)
+    (onSecond :
+      {X : Type} →
+      (op : EffectSig.Op (E := t2) X) →
+      (EffectSig.Res (E := t2) op → Pending1 m2 A) →
+      Pending1 m2 A)
+    (onThird :
+      {X : Type} →
+      (op : EffectSig.Op (E := t3) X) →
+      (EffectSig.Res (E := t3) op → Pending1 out A) →
+      Pending1 out A)
+    (program : Pending1 S A) :
+    Eliminated3 t1 t2 t3 S out A :=
+  eliminateThreeAt (t1 := t1) (t2 := t2) (t3 := t3) (skip1 := 0) (skip2 := 0) (skip3 := 0)
+    (S := S) (m1 := m1) (m2 := m2) (out := out) onFirst onSecond onThird program
 
 namespace Validation
 
@@ -224,6 +321,39 @@ theorem evalTwo_case1_spec : evalTwo_case1 = some (13, 13) := by
   native_decide
 
 theorem evalTwo_case2_spec : evalTwo_case2 = some (10, 77) := by
+  native_decide
+
+def elimThree (env : Nat) :
+    Eliminated3 AbortE EnvE DummyEffect Stack4 (EffectSum.Effect VarE VoidEffect) Nat :=
+  eliminateThree (t1 := AbortE) (t2 := EnvE) (t3 := DummyEffect)
+    (S := Stack4)
+    (m1 := EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
+    (m2 := EffectSum.Effect VarE DummyEffect)
+    (out := EffectSum.Effect VarE VoidEffect)
+    (onFirst := fun {_X} op _cont =>
+      match op with
+      | .fail _ => .pure 77)
+    (onSecond := fun {_X} op cont =>
+      match op with
+      | .get => cont env)
+    (onThird := fun {_X} op cont =>
+      match op with
+      | .ping => cont ())
+    program4
+
+def evalThree (env state fuel : Nat) : Option (Nat × Nat) :=
+  Var.run (Value := Nat) state fuel (pruneVoidRight (elimThree env).program)
+
+def evalThree_case1 : Option (Nat × Nat) :=
+  evalThree 3 10 48
+
+def evalThree_case2 : Option (Nat × Nat) :=
+  evalThree 0 10 48
+
+theorem evalThree_case1_spec : evalThree_case1 = some (13, 13) := by
+  native_decide
+
+theorem evalThree_case2_spec : evalThree_case2 = some (10, 77) := by
   native_decide
 
 def elimFirstAt :

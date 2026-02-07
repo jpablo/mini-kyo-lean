@@ -818,3 +818,39 @@ Add to facade:
   discharge proof shape.
 - Next step is evaluating whether to add a stable n-step encoding or keep
   explicit `2/3` combinators as the public surface.
+
+## ADR-0025: Add three-step facade combinators (`Eliminated3`, `eliminateThreeAt`)
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+
+### Context
+After introducing `eliminateTwoAt`, common 3-handler flows still required manual
+threading of one additional step and custom discharge-equation composition.
+
+### Decision
+Add:
+- `Eliminated3`
+- `discharge_three`
+- `eliminateThreeAt`
+- `eliminateThree` (first-occurrence convenience)
+
+### Why
+- Covers the practical "Abort + Env + Dummy"-style flows already used in
+  validation.
+- Keeps executable sequencing and row-shape discharge in one API layer.
+- Provides a concrete baseline to evaluate whether explicit small-arity
+  combinators are sufficient before introducing fully generic n-ary encodings.
+
+### Tradeoffs
+- Further increases facade API surface.
+- Still requires explicit intermediate stack types (`m1`, `m2`) at call sites.
+
+### Consequences
+- 2-step and 3-step elimination are now both first-class operations.
+- Next step is deciding between:
+  - continuing with explicit small-arity combinators (`2/3/...`), or
+  - introducing a single n-step typed composition encoding.

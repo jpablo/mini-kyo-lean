@@ -233,6 +233,12 @@ A replacement is accepted only when each item has either:
   - `eliminateTwoAt`
   - `eliminateTwo`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
+- Three-step facade composition now exists:
+  - `Eliminated3`
+  - `discharge_three`
+  - `eliminateThreeAt`
+  - `eliminateThree`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`

@@ -181,6 +181,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
     via `Eliminated2`, `eliminateTwoAt`, and `eliminateTwo`, with validation
     (`evalTwo_case1_spec`, `evalTwo_case2_spec`).
+30. [x] Add three-step facade combinators for sequential elimination.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+    via `Eliminated3`, `discharge_three`, `eliminateThreeAt`, and `eliminateThree`,
+    with validation (`evalThree_case1_spec`, `evalThree_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
