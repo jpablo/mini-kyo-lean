@@ -177,6 +177,10 @@ Acceptance:
     and `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
     by defining `eliminate` via `handleAtIndex` at `skip := 0`, and adding
     `selectSelf`/`selectSelfRow` so leaf-target elimination remains supported.
+29. [x] Add two-step facade combinators for sequential elimination.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+    via `Eliminated2`, `eliminateTwoAt`, and `eliminateTwo`, with validation
+    (`evalTwo_case1_spec`, `evalTwo_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

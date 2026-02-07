@@ -782,3 +782,39 @@ This split increased maintenance cost and risk of semantic drift.
 - Public elimination APIs now share one generalized engine.
 - Next step is deciding whether and how to retire or reframe the legacy removal
   evidence classes in the external-facing kernel surface.
+
+## ADR-0024: Add two-step facade combinators (`Eliminated2`, `eliminateTwoAt`)
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+
+### Context
+Even with `Eliminated` and `eliminateAt`, common two-step handling required
+manual threading:
+1) call first elimination
+2) pass `.program` into second elimination
+3) manually apply `discharge_two`
+
+### Decision
+Add to facade:
+- `Eliminated2` result record
+- `eliminateTwoAt` for index-controlled two-step elimination
+- `eliminateTwo` as first-occurrence (`skip := 0`) convenience
+
+### Why
+- Reduces boilerplate in the most common multi-handler case.
+- Keeps row-discharge composition tied to executable composition.
+- Provides a direct bridge toward future n-step façade ergonomics.
+
+### Tradeoffs
+- Adds API surface while n-ary composition design is still evolving.
+- Requires users to provide the intermediate stack type `mid` explicitly.
+
+### Consequences
+- Two-step elimination now has a first-class façade API with integrated
+  discharge proof shape.
+- Next step is evaluating whether to add a stable n-step encoding or keep
+  explicit `2/3` combinators as the public surface.

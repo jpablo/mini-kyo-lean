@@ -29,6 +29,16 @@ structure Eliminated (target S out A : Type)
   discharge :
     Row.toRowSet (stackRow S) = Row.singletonRowSet target ++ Row.toRowSet (stackRow out)
 
+/-- Result of eliminating two target effects in sequence from stack `S`. -/
+structure Eliminated2 (t1 t2 S out A : Type)
+    [EffectSig t1] [EffectSig t2] [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out] where
+  program : Pending1 out A
+  discharge :
+    Row.toRowSet (stackRow S) =
+      (Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++
+      Row.toRowSet (stackRow out)
+
 /-- Eliminate the first (leftmost) occurrence of one target effect from `S`. -/
 def eliminate
     [EffectSig target] [EffectSig S] [EffectSig out]
@@ -80,6 +90,53 @@ theorem discharge_two
     _ = (Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++ Row.toRowSet (stackRow out) := by
       symm
       exact Row.appendRowSet_assoc _ _ _
+
+/--
+Eliminate two targets in sequence, each by occurrence index in its current stack.
+-/
+def eliminateTwoAt
+    [EffectSig t1] [EffectSig t2] [EffectSig S] [EffectSig mid] [EffectSig out]
+    [StackRow S] [StackRow mid] [StackRow out]
+    [SelectOp t1 skip1 S mid] [SelectOpRow t1 skip1 S mid]
+    [SelectOp t2 skip2 mid out] [SelectOpRow t2 skip2 mid out]
+    (onFirst :
+      {X : Type} →
+      (op : EffectSig.Op (E := t1) X) →
+      (EffectSig.Res (E := t1) op → Pending1 mid A) →
+      Pending1 mid A)
+    (onSecond :
+      {X : Type} →
+      (op : EffectSig.Op (E := t2) X) →
+      (EffectSig.Res (E := t2) op → Pending1 out A) →
+      Pending1 out A)
+    (program : Pending1 S A) :
+    Eliminated2 t1 t2 S out A :=
+  let first := eliminateAt (target := t1) (skip := skip1) (S := S) (out := mid) onFirst program
+  let second := eliminateAt (target := t2) (skip := skip2) (S := mid) (out := out) onSecond first.program
+  { program := second.program, discharge := discharge_two first second }
+
+/--
+Eliminate two targets in sequence using first-occurrence semantics for both.
+-/
+def eliminateTwo
+    [EffectSig t1] [EffectSig t2] [EffectSig S] [EffectSig mid] [EffectSig out]
+    [StackRow S] [StackRow mid] [StackRow out]
+    [SelectOp t1 0 S mid] [SelectOpRow t1 0 S mid]
+    [SelectOp t2 0 mid out] [SelectOpRow t2 0 mid out]
+    (onFirst :
+      {X : Type} →
+      (op : EffectSig.Op (E := t1) X) →
+      (EffectSig.Res (E := t1) op → Pending1 mid A) →
+      Pending1 mid A)
+    (onSecond :
+      {X : Type} →
+      (op : EffectSig.Op (E := t2) X) →
+      (EffectSig.Res (E := t2) op → Pending1 out A) →
+      Pending1 out A)
+    (program : Pending1 S A) :
+    Eliminated2 t1 t2 S out A :=
+  eliminateTwoAt (t1 := t1) (t2 := t2) (skip1 := 0) (skip2 := 0)
+    (S := S) (mid := mid) (out := out) onFirst onSecond program
 
 namespace Validation
 
@@ -134,6 +191,40 @@ theorem abort_env_discharge_combined :
       (Row.singletonRowSet AbortE ++ Row.singletonRowSet EnvE) ++
       Row.toRowSet (stackRow (EffectSum.Effect VarE DummyEffect)) := by
   exact discharge_two elimAbort (elimEnv 3)
+
+def elimAbortEnvTwo (env : Nat) :
+    Eliminated2 AbortE EnvE Stack4 (EffectSum.Effect VarE DummyEffect) Nat :=
+  eliminateTwo (t1 := AbortE) (t2 := EnvE)
+    (S := Stack4) (mid := EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
+    (out := EffectSum.Effect VarE DummyEffect)
+    (onFirst := fun {_X} op _cont =>
+      match op with
+      | .fail _ => .pure 77)
+    (onSecond := fun {_X} op cont =>
+      match op with
+      | .get => cont env)
+    program4
+
+def evalTwo (env state fuel : Nat) : Option (Nat × Nat) :=
+  let afterDummy :=
+    eliminate (target := DummyEffect) (S := EffectSum.Effect VarE DummyEffect)
+      (onTarget := fun {_X} op cont =>
+        match op with
+        | .ping => cont ())
+      (elimAbortEnvTwo env).program
+  Var.run (Value := Nat) state fuel (pruneVoidRight afterDummy.program)
+
+def evalTwo_case1 : Option (Nat × Nat) :=
+  evalTwo 3 10 48
+
+def evalTwo_case2 : Option (Nat × Nat) :=
+  evalTwo 0 10 48
+
+theorem evalTwo_case1_spec : evalTwo_case1 = some (13, 13) := by
+  native_decide
+
+theorem evalTwo_case2_spec : evalTwo_case2 = some (10, 77) := by
+  native_decide
 
 def elimFirstAt :
     Eliminated EnvE EffectHandleNPath.Validation.DupStack3
