@@ -155,6 +155,11 @@ A replacement is accepted only when each item has either:
   - `obligations_decompose_of_contains`
   - `obligations_discharge_shape`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Pending.lean`.
+- Row-aware single-effect handler bridge now exists:
+  - `handleRemoved`
+  - `handleRemoved_obligations`
+  - `handleRemoved_discharge_shape`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - row-aware multi-effect handler elimination remains to be integrated with `Pending`.
+  - executable multi-effect dispatch/elimination remains to be integrated with `Pending`.

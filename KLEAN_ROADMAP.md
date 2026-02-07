@@ -102,6 +102,9 @@ Acceptance:
 10. [x] Bridge row removal witness into `Pending` obligation contracts.
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Pending.lean`
     via `obligations_decompose_of_contains` and `obligations_discharge_shape`.
+11. [x] Add row-aware single-effect handler discharge bridge.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge.lean`
+    via `handleRemoved`, `handleRemoved_obligations`, and `handleRemoved_discharge_shape`.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

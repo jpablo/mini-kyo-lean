@@ -33,18 +33,28 @@ Fold/eliminate a single-effect pending computation into closed `Pending`.
 closed result space.
 -/
 def fold [EffectSig E]
-    (onPure : A → Pending B Row.empty)
+    (onPure : A → Pending B S)
     (onRequest :
       {X : Type} →
       (op : EffectSig.Op (E := E) X) →
-      (EffectSig.Res (E := E) op → Pending B Row.empty) →
-      Pending B Row.empty) :
-    Pending1 E A → Pending B Row.empty
+      (EffectSig.Res (E := E) op → Pending B S) →
+      Pending B S) :
+    Pending1 E A → Pending B S
   | .pure a => onPure a
   | .defer thunk => .defer (fun _ => fold onPure onRequest (thunk ()))
   | .request op cont => onRequest op (fun out => fold onPure onRequest (cont out))
 
-/-- Specialized fold that preserves successful result values. -/
+/-- Specialized fold that preserves successful result values into target row `S`. -/
+def handleInto [EffectSig E]
+    (onRequest :
+      {X : Type} →
+      (op : EffectSig.Op (E := E) X) →
+      (EffectSig.Res (E := E) op → Pending A S) →
+      Pending A S) :
+    Pending1 E A → Pending A S :=
+  fold (onPure := Pending.pure) (onRequest := onRequest)
+
+/-- Specialized fold into closed `Pending`. -/
 def handle [EffectSig E]
     (onRequest :
       {X : Type} →
@@ -52,7 +62,7 @@ def handle [EffectSig E]
       (EffectSig.Res (E := E) op → Pending A Row.empty) →
       Pending A Row.empty) :
     Pending1 E A → Pending A Row.empty :=
-  fold (onPure := Pending.pure) (onRequest := onRequest)
+  handleInto (S := Row.empty) onRequest
 
 end ArrowEffect
 end Kernel

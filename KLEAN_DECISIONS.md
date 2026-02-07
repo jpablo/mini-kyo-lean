@@ -162,3 +162,37 @@ Represent removal/discharge first as a proof witness:
 ### Consequences
 - The equivalence contract now has a concrete Lean artifact for row removal.
 - Next step is to thread `Remove` into row-aware `Pending` handler signatures.
+
+## ADR-0005: Introduce `Discharge.handleRemoved` as row-aware handler contract
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge.lean`
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ArrowEffect.lean`
+
+### Context
+We now have:
+- single-effect interpreters (`Pending1`, `ArrowEffect.handleInto`)
+- proof-level row removal (`Row.Remove`)
+
+We still need a typed API that explicitly ties handler elimination to row
+discharge without waiting for a full multi-effect runtime dispatcher.
+
+### Decision
+Add `Discharge.handleRemoved`, requiring a `Row.Remove E S out` witness in the
+signature and returning `Pending A out`.
+
+### Why
+- Encodes the intended `E & S -> S` elimination shape directly in API types.
+- Keeps runtime implementation simple while preserving proof obligations.
+- Creates a stable integration point for future multi-effect dispatch.
+
+### Tradeoffs
+- Current bridge is still single-effect at runtime.
+- It does not yet route among multiple in-flight effect families.
+
+### Consequences
+- `Pending` obligations and `Discharge` now align on the same row-removal proof.
+- Remaining gap is implementation-level multi-effect request dispatch.
