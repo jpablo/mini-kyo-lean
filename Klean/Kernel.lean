@@ -10,6 +10,7 @@ import Klean.Kernel.EffectSum3
 import Klean.Kernel.EffectReassoc
 import Klean.Kernel.EffectHandle3
 import Klean.Kernel.EffectHandleN
+import Klean.Kernel.EffectHandleNRow
 import Klean.Kernel.EffectNest
 import Klean.Kernel.Discharge2
 import Klean.Kernel.Discharge3
@@ -31,6 +32,7 @@ This module re-exports the current kernel foundation:
 - executable nested-sum re-association transforms (`EffectReassoc`)
 - typeclass-driven 3-effect handler selection (`EffectHandle3`)
 - generic recursive nested-sum target handling (`EffectHandleN`)
+- row-semantic bridge for generic nested handling (`EffectHandleNRow`)
 - recursive nested-sum injection helpers (`EffectNest`)
 - two-step row-aware summed-effect discharge (`Discharge2`)
 - three-step row-aware nested-sum discharge (`Discharge3`)

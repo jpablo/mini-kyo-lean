@@ -193,6 +193,11 @@ A replacement is accepted only when each item has either:
   - `VoidEffect`
   - `pruneVoidRight`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleN.lean`.
+- Row-semantic bridge for generic nested handling now exists:
+  - `StackRow`
+  - `RemoveOpRow`
+  - `stackRow_discharge`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNRow.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
@@ -205,4 +210,4 @@ A replacement is accepted only when each item has either:
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending` (runtime n-ary nested-sum handling now exists, but row-proof integration and duplicate-effect policy are still pending).
+  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime n-ary nested-sum handling and a row bridge now exist, but a single unified API and duplicate-effect policy are still pending).

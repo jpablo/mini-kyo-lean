@@ -142,6 +142,11 @@ Acceptance:
     via `RemoveOp`, `OpProjection`, and `handleByRemoveOp`, plus
     terminal-right pruning (`VoidEffect`, `pruneVoidRight`) for rightmost-leaf
     elimination, with 4-effect validation (`eval4_case1_spec`, `eval4_case2_spec`).
+21. [x] Add row-semantic bridge for generic nested handling.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNRow.lean`
+    via `StackRow`, `RemoveOpRow`, and `stackRow_discharge`, with stack-specific
+    discharge theorems (`stack4_abort_discharge`, `stack_after_env_discharge`,
+    `stack_after_dummy_discharge`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

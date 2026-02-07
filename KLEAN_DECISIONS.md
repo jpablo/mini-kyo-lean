@@ -516,3 +516,35 @@ Add:
 - Generic handling now covers rightmost-leaf targets as well.
 - Remaining work is integrating this runtime machinery with row-level proofs and
   normalization policy.
+
+## ADR-0016: Add `EffectHandleNRow` bridge from nested stacks to `Row` discharge
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNRow.lean`
+
+### Context
+After `EffectHandleN`, runtime generic elimination was available, but we still
+needed explicit alignment with row-level discharge contracts.
+
+### Decision
+Add:
+- `StackRow` (map stack types to row obligations)
+- `RemoveOpRow` (recursive `Row.Remove` witness matching elimination shape)
+- `stackRow_discharge` (canonical `RowSet` discharge equality)
+
+### Why
+- Connects runtime stack elimination to existing row proof infrastructure.
+- Makes discharge reasoning explicit at type level.
+- Provides a stepping stone toward unified `Pending` integration.
+
+### Tradeoffs
+- Current `StackRow` mapping is right-associated and marker-based.
+- Duplicate-effect and normalization policy are still open.
+
+### Consequences
+- Generic runtime handling now has corresponding row-semantic theorems.
+- Next step is exposing one API that couples runtime elimination and row
+  obligations in `Pending`-facing signatures.
