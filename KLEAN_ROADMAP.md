@@ -76,7 +76,9 @@ Acceptance:
 ## Immediate Next Work Items
 1. [x] Implement `Klean/Kernel/Row.lean` and freeze row design.
 2. [x] Implement minimal `Pending` + `Effect.defer` against that row.
-3. [ ] Port one validation effect trio (`Abort`, `Env`, `Var`) as kernel acceptance tests.
+3. [x] Port one validation effect trio (`Abort`, `Env`, `Var`) as kernel acceptance tests.
+   Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Validation.lean`
+   as standalone fuel-bounded interpreters.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

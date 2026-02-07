@@ -116,5 +116,9 @@ A replacement is accepted only when each item has either:
 
 - Good foundation: open composition + membership proofs are in place.
 - Minimal pending kernel skeleton exists (`Pending`, `flatMap`, `Effect.defer`).
+- Abort/Env/Var acceptance semantics are validated in
+  `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Validation.lean`
+  via standalone fuel-bounded interpreters.
 - Main gap: semantic set-like behavior (commutativity/idempotence) is not yet encoded.
-- Next critical step: choose and implement row normalization/equivalence strategy.
+- Next critical step: choose and implement row normalization/equivalence strategy, then
+  integrate trio-style handlers directly over the generic `Pending` encoding.
