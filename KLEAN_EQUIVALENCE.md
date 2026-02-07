@@ -127,8 +127,11 @@ A replacement is accepted only when each item has either:
   - `RowSet`
   - `appendRowSet` with commutativity/idempotence/associativity equalities.
 - Minimal pending kernel skeleton exists (`Pending`, `flatMap`, `Effect.defer`).
+- `Pending` now exposes semantic effect obligations through `obligations : RowSet`,
+  with flatMap obligation commutativity/associativity laws.
 - Abort/Env/Var acceptance semantics are validated in
   `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Validation.lean`
   via standalone fuel-bounded interpreters.
 - Main gap: syntactic normalization/canonical form is not yet encoded.
-- Next critical step: integrate `SemEq`/`RowSet` into kernel API contracts.
+- Next critical step: move from standalone trio validations to generic
+  `Pending`-based effect suspension/handlers.

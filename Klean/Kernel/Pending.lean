@@ -62,6 +62,36 @@ def eval? {A : Type} : Nat → Pending A Row.empty → Option A
   | Nat.succ _fuel, .pure value => some value
   | Nat.succ fuel, .defer thunk => eval? fuel (thunk ())
 
+/--
+Semantic obligation view of a pending computation.
+
+This forgets syntactic row shape and keeps only the semantic row quotient.
+-/
+def obligations {A : Type} {S : Row} (_ : Pending A S) : Row.RowSet :=
+  Row.toRowSet S
+
+/--
+`map` preserves semantic obligations.
+-/
+theorem obligations_map {A B : Type} {S : Row} (self : Pending A S) (f : A → B) :
+    obligations (map self f) = obligations self := rfl
+
+/--
+`flatMap` obligations are semantically commutative in the row quotient.
+-/
+theorem flatMap_obligations_comm {A B : Type} {S1 S2 : Row} (self : Pending A S1) (f : A → Pending B S2) :
+    obligations (flatMap self f) = Row.toRowSet (S2 ++ S1) := by
+  change Row.toRowSet (S1 ++ S2) = Row.toRowSet (S2 ++ S1)
+  exact Quotient.sound (Row.semEq_append_comm S1 S2)
+
+/--
+`flatMap` obligations are semantically associative in the row quotient.
+-/
+theorem flatMap_obligations_assoc {A B C : Type} {S1 S2 S3 : Row}
+    (_self : Pending A S1) (_f : A → Pending B S2) (_g : B → Pending C S3) :
+    Row.toRowSet ((S1 ++ S2) ++ S3) = Row.toRowSet (S1 ++ (S2 ++ S3)) := by
+  exact Quotient.sound (Row.semEq_append_assoc S1 S2 S3)
+
 end Pending
 end Kernel
 end Klean

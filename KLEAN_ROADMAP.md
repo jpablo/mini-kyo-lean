@@ -81,7 +81,10 @@ Acceptance:
    as standalone fuel-bounded interpreters.
 4. [x] Add semantic row-equivalence layer (`SemEq`) with commutativity/idempotence theorems.
    Also includes append congruence/associativity theorems for row-semantic rewriting.
-5. [ ] Integrate row equivalence (`≈`) into upcoming kernel API contracts.
+5. [x] Integrate row equivalence (`≈`) into upcoming kernel API contracts.
+   `Pending` now exposes semantic obligations through `obligations : RowSet`, with
+   flatMap commutativity/associativity obligation laws in
+   `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Pending.lean`.
 6. [x] Add canonical row normalization strategy (or equivalent quotient-style API boundary).
    Implemented quotient-style boundary: `RowSet = Row / ≈` in
    `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Row.lean`.
