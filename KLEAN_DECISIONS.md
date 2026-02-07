@@ -674,3 +674,33 @@ Add:
 ### Consequences
 - Duplicate-target policy now covers both binary and one nested form.
 - Remaining work is unifying these policies into a general path-based API.
+
+## ADR-0021: Generalize duplicate-target selection via occurrence index
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+
+### Context
+Shape-specific selectors (`Side`, `Side3`) were useful but not scalable as stack
+shapes grew.
+
+### Decision
+Introduce:
+- `SelectOp target skip S out` (skip-count projection evidence)
+- `handleAtIndex` to eliminate the `(skip+1)`-th target occurrence
+
+### Why
+- Removes shape-specific duplication for duplicate-target handling.
+- Preserves type-safe operation forwarding/handling.
+- Reuses the existing generic projection machinery style.
+
+### Tradeoffs
+- Index semantics are tied to right-associated, left-to-right occurrence order.
+- Invalid indices still surface as missing-instance/type errors.
+
+### Consequences
+- Duplicate handling is now expressed with one generalized mechanism.
+- Remaining work is documenting/stabilizing this as part of the final public API.

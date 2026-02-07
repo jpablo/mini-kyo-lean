@@ -14,6 +14,7 @@ import Klean.Kernel.EffectHandleNRow
 import Klean.Kernel.EffectHandleNCoupled
 import Klean.Kernel.EffectHandleNApi
 import Klean.Kernel.EffectHandleNPath
+import Klean.Kernel.EffectHandleNSelect
 import Klean.Kernel.EffectNest
 import Klean.Kernel.Discharge2
 import Klean.Kernel.Discharge3
@@ -39,6 +40,7 @@ This module re-exports the current kernel foundation:
 - coupled runtime+row elimination steps (`EffectHandleNCoupled`)
 - higher-level generic elimination facade (`EffectHandleNApi`)
 - explicit path-based duplicate-target handling (`EffectHandleNPath`)
+- generalized duplicate selection by occurrence index (`EffectHandleNSelect`)
 - recursive nested-sum injection helpers (`EffectNest`)
 - two-step row-aware summed-effect discharge (`Discharge2`)
 - three-step row-aware nested-sum discharge (`Discharge3`)

@@ -163,6 +163,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNPath.lean`
     via `Side3` and `handleDuplicate3`, with validation
     (`evalOuter3_spec`, `evalInner3_spec`).
+26. [x] Generalize duplicate-target selection by occurrence index.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+    via `SelectOp` and `handleAtIndex`, with index-based validation
+    (`evalFirstIdx_spec`, `evalSecondIdx_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
