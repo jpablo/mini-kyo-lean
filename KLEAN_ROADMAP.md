@@ -155,6 +155,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
     via `Eliminated`, `eliminate`, and `discharge_two`, with facade validation
     (`evalApi_case1_spec`, `evalApi_case2_spec`).
+24. [x] Add explicit duplicate-target side-selection policy for `E + E`.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNPath.lean`
+    via `Side` and `handleDuplicate`, with duplicate-`Env` validation
+    (`evalLeft_spec`, `evalRight_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

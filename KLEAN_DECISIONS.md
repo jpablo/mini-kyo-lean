@@ -612,3 +612,33 @@ Introduce a thin facade:
 - We now have a coherent layered stack: runtime core -> row bridge -> coupled
   steps -> facade API.
 - Remaining work is finalizing/stabilizing this as the external kernel surface.
+
+## ADR-0019: Add explicit binary duplicate-target side policy (`E + E`)
+
+Date: 2026-02-07  
+Status: Accepted (narrow policy)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNPath.lean`
+
+### Context
+Duplicate effect occurrences need a deterministic selection policy. A fully
+general path mechanism is still under design, but we needed an immediate,
+executable policy artifact.
+
+### Decision
+Introduce `Side` (`left`/`right`) and `handleDuplicate` for stacks of shape
+`E + E`, with explicit caller-chosen elimination side.
+
+### Why
+- Provides deterministic behavior today for the core duplicate case.
+- Keeps policy explicit at call sites.
+- Avoids blocking broader progress on full path-generalization design.
+
+### Tradeoffs
+- Scope is intentionally narrow (`E + E` only).
+- Does not yet solve arbitrary duplicate placement in deeper stacks.
+
+### Consequences
+- Duplicate policy now has a concrete executable baseline.
+- Next step is extending side/path policy to deeper nested stacks.

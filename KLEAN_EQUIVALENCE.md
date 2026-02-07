@@ -207,6 +207,10 @@ A replacement is accepted only when each item has either:
   - `eliminate`
   - `discharge_two`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
+- Explicit duplicate-target policy now exists for the immediate `E + E` case:
+  - `Side`
+  - `handleDuplicate`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNPath.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
@@ -219,4 +223,4 @@ A replacement is accepted only when each item has either:
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime handling, row bridge, coupled steps, and facade API now exist, but duplication policy and final surface stabilization are still pending).
+  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime handling, row bridge, coupled steps, facade API, and a binary duplicate policy exist, but generalized duplicate policy and final surface stabilization are still pending).
