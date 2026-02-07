@@ -70,10 +70,10 @@ Mapped by `Row.Contains`.
 ### Partially matched (needs semantic layer)
 
 4. Order-insensitive meaning  
-Current `Row` is ordered; we still need normalization/equivalence so ordering is abstracted away.
+Matched at semantic level via `Row.SemEq` and `semEq_append_comm`.
 
 5. Idempotent meaning  
-Current `Row` permits duplicates; we still need canonicalization or quotient/equivalence to collapse duplicates semantically.
+Matched at semantic level via `Row.SemEq` and `semEq_append_idem`.
 
 6. Multi-handler composition  
 Mechanically possible, but we need normalized row laws to keep type signatures ergonomic.
@@ -84,7 +84,7 @@ Mechanically possible, but we need normalized row laws to keep type signatures e
 We need a typed “remove one `E` from row” operation with proofs.
 
 8. Canonical equivalence relation for rows  
-Needed so APIs reason about effect sets semantically, not by row syntax shape.
+Implemented (`Row.SemEq`), but not yet integrated across all kernel APIs.
 
 ## 4. Why `Row` Was Chosen
 
@@ -115,10 +115,18 @@ A replacement is accepted only when each item has either:
 ## 6. Current Status Summary
 
 - Good foundation: open composition + membership proofs are in place.
+- Semantic set-like layer exists in code:
+  - `contains_append_iff`
+  - `SemEq`
+  - `semEq_append_comm`
+  - `semEq_append_idem`
+  - `semEq_append_congr_left`
+  - `semEq_append_congr_right`
+  - `semEq_append_assoc`
 - Minimal pending kernel skeleton exists (`Pending`, `flatMap`, `Effect.defer`).
 - Abort/Env/Var acceptance semantics are validated in
   `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Validation.lean`
   via standalone fuel-bounded interpreters.
-- Main gap: semantic set-like behavior (commutativity/idempotence) is not yet encoded.
-- Next critical step: choose and implement row normalization/equivalence strategy, then
-  integrate trio-style handlers directly over the generic `Pending` encoding.
+- Main gap: syntactic normalization/canonical form is not yet encoded.
+- Next critical step: integrate `SemEq` into kernel API contracts and add a
+  canonical normalization strategy.

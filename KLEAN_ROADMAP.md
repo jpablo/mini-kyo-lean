@@ -79,6 +79,10 @@ Acceptance:
 3. [x] Port one validation effect trio (`Abort`, `Env`, `Var`) as kernel acceptance tests.
    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Validation.lean`
    as standalone fuel-bounded interpreters.
+4. [x] Add semantic row-equivalence layer (`SemEq`) with commutativity/idempotence theorems.
+   Also includes append congruence/associativity theorems for row-semantic rewriting.
+5. [ ] Integrate row equivalence (`≈`) into upcoming kernel API contracts.
+6. [ ] Add canonical row normalization strategy (or equivalent quotient-style API boundary).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
