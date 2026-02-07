@@ -198,6 +198,10 @@ A replacement is accepted only when each item has either:
   - `RemoveOpRow`
   - `stackRow_discharge`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNRow.lean`.
+- Coupled runtime+row elimination API now exists:
+  - `Step`
+  - `handleStep`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNCoupled.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
@@ -210,4 +214,4 @@ A replacement is accepted only when each item has either:
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime n-ary nested-sum handling and a row bridge now exist, but a single unified API and duplicate-effect policy are still pending).
+  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime handling, row bridge, and coupled step API now exist, but duplication policy and a finalized public kernel API are still pending).

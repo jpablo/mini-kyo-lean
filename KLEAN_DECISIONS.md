@@ -548,3 +548,35 @@ Add:
 - Generic runtime handling now has corresponding row-semantic theorems.
 - Next step is exposing one API that couples runtime elimination and row
   obligations in `Pending`-facing signatures.
+
+## ADR-0017: Add coupled runtime+row elimination step API (`EffectHandleNCoupled`)
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNCoupled.lean`
+
+### Context
+After adding `EffectHandleN` (runtime) and `EffectHandleNRow` (row bridge), the
+two artifacts still had to be consumed separately at call sites.
+
+### Decision
+Introduce:
+- `Step target S out A` with both
+  - transformed runtime program (`Pending1 out A`)
+  - row discharge equality (`RowSet`)
+- `handleStep` as the constructor from handler + program
+
+### Why
+- Couples operational and proof-level outcomes in one value.
+- Reduces orchestration noise in multi-step elimination pipelines.
+- Provides a clearer shape for eventual public kernel API design.
+
+### Tradeoffs
+- Still staged per elimination step.
+- Final API shape for `Pending` integration remains open.
+
+### Consequences
+- Runtime and row proof flows can now be advanced together by construction.
+- Next step is deciding final external API and duplicate-effect semantics.

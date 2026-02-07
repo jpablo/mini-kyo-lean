@@ -147,6 +147,10 @@ Acceptance:
     via `StackRow`, `RemoveOpRow`, and `stackRow_discharge`, with stack-specific
     discharge theorems (`stack4_abort_discharge`, `stack_after_env_discharge`,
     `stack_after_dummy_discharge`).
+22. [x] Add coupled runtime+row elimination API.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNCoupled.lean`
+    via `Step` + `handleStep`, with 4-effect coupled validation
+    (`evalCoupled_case1_spec`, `evalCoupled_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
