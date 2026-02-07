@@ -642,3 +642,35 @@ Introduce `Side` (`left`/`right`) and `handleDuplicate` for stacks of shape
 ### Consequences
 - Duplicate policy now has a concrete executable baseline.
 - Next step is extending side/path policy to deeper nested stacks.
+
+## ADR-0020: Extend duplicate policy to `E + (E + R)` with outer/inner selection
+
+Date: 2026-02-07  
+Status: Accepted (incremental extension)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNPath.lean`
+
+### Context
+`E + E` side-selection solved only the simplest duplicate shape. We needed the
+next practical nested case where one duplicate is at stack head and another is
+inside the right branch.
+
+### Decision
+Add:
+- `Side3` (`outer` / `inner`)
+- `handleDuplicate3` for stacks `E + (E + R)` returning `E + R`
+
+### Why
+- Extends deterministic duplicate handling without introducing complex generic
+  path machinery.
+- Reuses existing reassociation-aware handling primitives.
+- Provides immediate coverage for a common nested duplicate shape.
+
+### Tradeoffs
+- Still shape-specific.
+- Not yet a fully generic duplicate-selection mechanism.
+
+### Consequences
+- Duplicate-target policy now covers both binary and one nested form.
+- Remaining work is unifying these policies into a general path-based API.

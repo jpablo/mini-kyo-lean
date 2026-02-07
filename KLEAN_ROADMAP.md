@@ -159,6 +159,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNPath.lean`
     via `Side` and `handleDuplicate`, with duplicate-`Env` validation
     (`evalLeft_spec`, `evalRight_spec`).
+25. [x] Extend duplicate-target policy to `E + (E + R)`.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNPath.lean`
+    via `Side3` and `handleDuplicate3`, with validation
+    (`evalOuter3_spec`, `evalInner3_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
