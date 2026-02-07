@@ -241,10 +241,15 @@ def eliminateTwoAt
       (EffectSig.Res (E := t2) op → Pending1 out A) →
       Pending1 out A)
     (program : Pending1 S A) :
-    Eliminated2 t1 t2 S out A :=
-  let first := eliminateAt (target := t1) (skip := skip1) (S := S) (out := mid) onFirst program
-  let second := eliminateAt (target := t2) (skip := skip2) (S := mid) (out := out) onSecond first.program
-  { program := second.program, discharge := discharge_two first second }
+    Eliminated2 t1 t2 S out A := by
+  let plan : ElimPlan S out A :=
+    (ElimPlan.singleAt (target := t1) (skip := skip1) (S := S) (out := mid) onFirst) >>>
+    (ElimPlan.singleAt (target := t2) (skip := skip2) (S := mid) (out := out) onSecond)
+  let executed := plan.run program
+  refine
+    { program := executed.program
+      discharge := ?_ }
+  simpa [plan] using executed.discharge
 
 /--
 Eliminate two targets in sequence using first-occurrence semantics for both.
@@ -295,11 +300,16 @@ def eliminateThreeAt
       (EffectSig.Res (E := t3) op → Pending1 out A) →
       Pending1 out A)
     (program : Pending1 S A) :
-    Eliminated3 t1 t2 t3 S out A :=
-  let first := eliminateAt (target := t1) (skip := skip1) (S := S) (out := m1) onFirst program
-  let second := eliminateAt (target := t2) (skip := skip2) (S := m1) (out := m2) onSecond first.program
-  let third := eliminateAt (target := t3) (skip := skip3) (S := m2) (out := out) onThird second.program
-  { program := third.program, discharge := discharge_three first second third }
+    Eliminated3 t1 t2 t3 S out A := by
+  let plan : ElimPlan S out A :=
+    ((ElimPlan.singleAt (target := t1) (skip := skip1) (S := S) (out := m1) onFirst) >>>
+      (ElimPlan.singleAt (target := t2) (skip := skip2) (S := m1) (out := m2) onSecond)) >>>
+      (ElimPlan.singleAt (target := t3) (skip := skip3) (S := m2) (out := out) onThird)
+  let executed := plan.run program
+  refine
+    { program := executed.program
+      discharge := ?_ }
+  simpa [plan] using executed.discharge
 
 /--
 Eliminate three targets in sequence using first-occurrence semantics for all.

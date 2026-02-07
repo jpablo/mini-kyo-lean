@@ -250,6 +250,9 @@ A replacement is accepted only when each item has either:
   - `ElimPlan.run`
   - `Planned`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
+- Fixed-arity composition now delegates to the plan core:
+  - `eliminateTwoAt` and `eliminateThreeAt` are implemented via `ElimPlan`
+  composition/execution in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`

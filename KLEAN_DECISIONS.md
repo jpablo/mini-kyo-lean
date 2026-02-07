@@ -928,3 +928,38 @@ Add:
 - n-step plan APIs are now practical for day-to-day use in validation/examples.
 - Next step is deciding whether to de-emphasize fixed-arity helpers (`2/3`) in
   favor of the plan API as the primary public façade.
+
+## ADR-0028: Implement fixed-arity composition on top of `ElimPlan`
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+
+### Context
+After introducing `ElimPlan`, fixed-arity helpers still carried their own
+threading logic, leaving two composition implementations in the facade.
+
+### Decision
+Refactor:
+- `eliminateTwoAt`
+- `eliminateThreeAt`
+
+to build a composed `ElimPlan`, execute it with `run`, and reuse its discharge.
+
+### Why
+- Makes `ElimPlan` the single composition kernel.
+- Reduces duplicated composition code and proof paths.
+- Keeps fixed-arity APIs as thin convenience wrappers.
+
+### Tradeoffs
+- Fixed-arity helpers now depend more directly on `ElimPlan` internals.
+- Large `simpa [plan]` proofs can become brittle if plan internals are renamed.
+
+### Consequences
+- API layering is clearer:
+  - core composition: `ElimPlan`
+  - convenience surface: `eliminateTwo/Three`
+- Next step is deciding whether to keep all fixed-arity helpers long-term or
+  retain only first-occurrence and plan-based composition for the public API.
