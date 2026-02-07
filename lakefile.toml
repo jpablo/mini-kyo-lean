@@ -1,9 +1,12 @@
 name = "mini-kyo-lean"
 version = "0.1.0"
-defaultTargets = ["mini-kyo-lean"]
+defaultTargets = ["Klean"]
 
 [[lean_lib]]
 name = "MiniKyoLean"
+
+[[lean_lib]]
+name = "Klean"
 
 [[lean_exe]]
 name = "mini-kyo-lean"
