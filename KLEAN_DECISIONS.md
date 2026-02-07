@@ -894,3 +894,37 @@ Add a generic composable facade object:
   - fully composable n-step elimination plans.
 - Next step is deciding which API should be primary for external users and how
   to expose plan-building ergonomics.
+
+## ADR-0027: Add ergonomic plan helpers (`single`, `>>>`, `run`)
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+
+### Context
+`ElimPlan.singleAt` + `ElimPlan.then` were expressive but verbose for common
+first-occurrence workflows and for executing a plan against a concrete program.
+
+### Decision
+Add:
+- `ElimPlan.single` as `skip := 0` convenience
+- `>>>` infix alias for `ElimPlan.then`
+- `Planned` execution-result record
+- `ElimPlan.run` to materialize a plan on a program while preserving discharge
+
+### Why
+- Lowers boilerplate at call sites.
+- Keeps "plan definition" and "plan execution result" distinct in the type
+  model.
+- Improves readability for multi-step handler pipelines.
+
+### Tradeoffs
+- Adds another naming layer over existing primitives.
+- Could overlap with future custom syntax if we later introduce DSL-style plans.
+
+### Consequences
+- n-step plan APIs are now practical for day-to-day use in validation/examples.
+- Next step is deciding whether to de-emphasize fixed-arity helpers (`2/3`) in
+  favor of the plan API as the primary public façade.

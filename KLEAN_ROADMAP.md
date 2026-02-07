@@ -189,6 +189,9 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
     via `ElimPlan`, `ElimPlan.singleAt`, and `ElimPlan.then`, with plan-based
     validation (`evalPlan_case1_spec`, `evalPlan_case2_spec`).
+32. [x] Add ergonomic plan helpers and execution result wrapper.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+    via `ElimPlan.single`, infix `>>>`, `ElimPlan.run`, and `Planned`.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

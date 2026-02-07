@@ -62,6 +62,15 @@ structure ElimPlan (S out A : Type)
   discharge :
     Row.toRowSet (stackRow S) = removed ++ Row.toRowSet (stackRow out)
 
+/-- Result of executing an elimination plan against one program. -/
+structure Planned (S out A : Type)
+    [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out] where
+  removed : Row.RowSet
+  program : Pending1 out A
+  discharge :
+    Row.toRowSet (stackRow S) = removed ++ Row.toRowSet (stackRow out)
+
 /-- Identity elimination plan (remove nothing). -/
 def ElimPlan.id [EffectSig S] [StackRow S] : ElimPlan S S A where
   removed := Row.toRowSet Row.empty
@@ -88,6 +97,20 @@ def ElimPlan.singleAt
   apply := handleAtIndex (target := target) (skip := skip) (S := S) (out := out) onTarget
   discharge := stackRow_discharge_at (target := target) (skip := skip) (S := S) (out := out)
 
+/-- First-occurrence single-step elimination plan (`skip := 0`). -/
+def ElimPlan.single
+    [EffectSig target] [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out]
+    [SelectOp target 0 S out]
+    [SelectOpRow target 0 S out]
+    (onTarget :
+      {X : Type} →
+      (op : EffectSig.Op (E := target) X) →
+      (EffectSig.Res (E := target) op → Pending1 out A) →
+      Pending1 out A) :
+    ElimPlan S out A :=
+  ElimPlan.singleAt (target := target) (skip := 0) (S := S) (out := out) onTarget
+
 /--
 Sequential composition of elimination plans.
 -/
@@ -107,6 +130,20 @@ def ElimPlan.then
       _ = (first.removed ++ second.removed) ++ Row.toRowSet (stackRow out) := by
         symm
         exact Row.appendRowSet_assoc _ _ _
+
+/-- Infix alias for elimination-plan composition. -/
+infixr:65 " >>> " => ElimPlan.then
+
+/-- Execute an elimination plan on a concrete program. -/
+def ElimPlan.run
+    [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out]
+    (plan : ElimPlan S out A)
+    (program : Pending1 S A) :
+    Planned S out A where
+  removed := plan.removed
+  program := plan.apply program
+  discharge := plan.discharge
 
 /-- Eliminate the first (leftmost) occurrence of one target effect from `S`. -/
 def eliminate
@@ -417,7 +454,7 @@ theorem evalThree_case2_spec : evalThree_case2 = some (10, 77) := by
 
 def planAbort :
     ElimPlan Stack4 (EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect)) Nat :=
-  ElimPlan.singleAt (target := AbortE) (skip := 0)
+  ElimPlan.single (target := AbortE)
     (S := Stack4) (out := EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
     (onTarget := fun {_X} op _cont =>
       match op with
@@ -426,7 +463,7 @@ def planAbort :
 def planEnv (env : Nat) :
     ElimPlan (EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
       (EffectSum.Effect VarE DummyEffect) Nat :=
-  ElimPlan.singleAt (target := EnvE) (skip := 0)
+  ElimPlan.single (target := EnvE)
     (S := EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
     (out := EffectSum.Effect VarE DummyEffect)
     (onTarget := fun {_X} op cont =>
@@ -435,7 +472,7 @@ def planEnv (env : Nat) :
 
 def planDummy :
     ElimPlan (EffectSum.Effect VarE DummyEffect) (EffectSum.Effect VarE VoidEffect) Nat :=
-  ElimPlan.singleAt (target := DummyEffect) (skip := 0)
+  ElimPlan.single (target := DummyEffect)
     (S := EffectSum.Effect VarE DummyEffect)
     (out := EffectSum.Effect VarE VoidEffect)
     (onTarget := fun {_X} op cont =>
@@ -444,9 +481,7 @@ def planDummy :
 
 def planThreeSteps (env : Nat) :
     ElimPlan Stack4 (EffectSum.Effect VarE VoidEffect) Nat :=
-  ElimPlan.then (A := Nat)
-    (ElimPlan.then (A := Nat) planAbort (planEnv env))
-    planDummy
+  (planAbort >>> planEnv env) >>> planDummy
 
 theorem planThreeSteps_discharge (env : Nat) :
     Row.toRowSet (stackRow Stack4) =
@@ -454,8 +489,15 @@ theorem planThreeSteps_discharge (env : Nat) :
       Row.toRowSet (stackRow (EffectSum.Effect VarE VoidEffect)) := by
   simpa [planThreeSteps] using (planThreeSteps env).discharge
 
+theorem planThreeSteps_run_discharge (env : Nat) :
+    Row.toRowSet (stackRow Stack4) =
+      ((Row.singletonRowSet AbortE ++ Row.singletonRowSet EnvE) ++ Row.singletonRowSet DummyEffect) ++
+      Row.toRowSet (stackRow (EffectSum.Effect VarE VoidEffect)) := by
+  simpa [planThreeSteps] using ((planThreeSteps env).run program4).discharge
+
 def evalPlan (env state fuel : Nat) : Option (Nat × Nat) :=
-  Var.run (Value := Nat) state fuel (pruneVoidRight ((planThreeSteps env).apply program4))
+  let executed := (planThreeSteps env).run program4
+  Var.run (Value := Nat) state fuel (pruneVoidRight executed.program)
 
 def evalPlan_case1 : Option (Nat × Nat) :=
   evalPlan 3 10 48
