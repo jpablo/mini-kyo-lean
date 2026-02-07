@@ -1,4 +1,5 @@
 import Klean.Kernel.EffectHandleNCoupled
+import Klean.Kernel.EffectHandleNSelect
 
 /-!
 Higher-level facade for generic nested effect elimination.
@@ -16,6 +17,7 @@ namespace EffectHandleNApi
 open EffectHandleN
 open EffectHandleNRow
 open EffectHandleNCoupled
+open EffectHandleNSelect
 
 /-- Row-semantic obligations of a stack-typed pending program. -/
 def obligations [EffectSig S] [StackRow S] (_ : Pending1 S A) : Row.RowSet :=
@@ -44,6 +46,24 @@ def eliminate
     Eliminated target S out A :=
   let step := handleStep (target := target) (S := S) (out := out) onTarget program
   { program := step.program, discharge := step.discharge }
+
+/--
+Eliminate the `(skip+1)`-th occurrence of `target` in `S`.
+-/
+def eliminateAt
+    [EffectSig target] [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out]
+    [SelectOp target skip S out]
+    [SelectOpRow target skip S out]
+    (onTarget :
+      {X : Type} →
+      (op : EffectSig.Op (E := target) X) →
+      (EffectSig.Res (E := target) op → Pending1 out A) →
+      Pending1 out A)
+    (program : Pending1 S A) :
+    Eliminated target S out A where
+  program := handleAtIndex (target := target) (skip := skip) (S := S) (out := out) onTarget program
+  discharge := stackRow_discharge_at (target := target) (skip := skip) (S := S) (out := out)
 
 /--
 Compose the discharge equalities from two elimination steps.
@@ -116,6 +136,42 @@ theorem abort_env_discharge_combined :
       (Row.singletonRowSet AbortE ++ Row.singletonRowSet EnvE) ++
       Row.toRowSet (stackRow (EffectSum.Effect VarE DummyEffect)) := by
   exact discharge_two elimAbort (elimEnv 3)
+
+def elimFirstAt :
+    Eliminated EnvE EffectHandleNPath.Validation.DupStack3
+      (EffectSum.Effect EnvE EffectHandleNPath.Validation.Dummy) Nat :=
+  eliminateAt (target := EnvE) (skip := 0)
+    (S := EffectHandleNPath.Validation.DupStack3)
+    (out := EffectSum.Effect EnvE EffectHandleNPath.Validation.Dummy)
+    (onTarget := fun {_X} op cont =>
+      match op with
+      | Env.Op.get => cont (1 : Nat))
+    EffectHandleNPath.Validation.dupProgram3
+
+def evalFirstAt : Option Nat :=
+  Env.run (Value := Nat) 2 24
+    (EffectHandleNPath.Validation.resolveDummy elimFirstAt.program)
+
+def elimSecondAt :
+    Eliminated EnvE EffectHandleNPath.Validation.DupStack3
+      (EffectSum.Effect EnvE EffectHandleNPath.Validation.Dummy) Nat :=
+  eliminateAt (target := EnvE) (skip := 1)
+    (S := EffectHandleNPath.Validation.DupStack3)
+    (out := EffectSum.Effect EnvE EffectHandleNPath.Validation.Dummy)
+    (onTarget := fun {_X} op cont =>
+      match op with
+      | Env.Op.get => cont (9 : Nat))
+    EffectHandleNPath.Validation.dupProgram3
+
+def evalSecondAt : Option Nat :=
+  Env.run (Value := Nat) 4 24
+    (EffectHandleNPath.Validation.resolveDummy elimSecondAt.program)
+
+theorem evalFirstAt_spec : evalFirstAt = some 12 := by
+  native_decide
+
+theorem evalSecondAt_spec : evalSecondAt = some 49 := by
+  native_decide
 
 end Validation
 

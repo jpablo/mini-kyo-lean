@@ -167,6 +167,11 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
     via `SelectOp` and `handleAtIndex`, with index-based validation
     (`evalFirstIdx_spec`, `evalSecondIdx_spec`).
+27. [x] Bridge index-based duplicate selection to row discharge and facade API.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+    and `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+    via `SelectOpRow`, `stackRow_discharge_at`, and `eliminateAt`, with facade
+    validation (`evalFirstAt_spec`, `evalSecondAt_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

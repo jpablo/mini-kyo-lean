@@ -217,6 +217,12 @@ A replacement is accepted only when each item has either:
   - `SelectOp`
   - `handleAtIndex`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`.
+- Row-coupled index selection and facade integration now exist:
+  - `SelectOpRow`
+  - `stackRow_discharge_at`
+  - `eliminateAt`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+  and `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
@@ -229,4 +235,4 @@ A replacement is accepted only when each item has either:
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime handling, row bridge, coupled steps, facade API, and index-based duplicate selection now exist, but final surface stabilization is still pending).
+  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime handling, row bridge, coupled steps, facade API, and index-based duplicate selection with row-coupled discharge now exist, but final surface stabilization is still pending).

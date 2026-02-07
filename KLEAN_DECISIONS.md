@@ -704,3 +704,44 @@ Introduce:
 ### Consequences
 - Duplicate handling is now expressed with one generalized mechanism.
 - Remaining work is documenting/stabilizing this as part of the final public API.
+
+## ADR-0022: Couple index-based duplicate selection with row discharge and facade
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+
+### Context
+`SelectOp` + `handleAtIndex` provided runtime elimination by occurrence index,
+but the generic row accounting and high-level facade still only covered the
+single-occurrence removal path.
+
+### Decision
+Add:
+- `SelectOpRow target skip S out` as row-level witness for indexed removal
+- `stackRow_discharge_at` as the canonical row discharge theorem for
+  `handleAtIndex`
+- `eliminateAt` in `EffectHandleNApi` so index-based duplicate elimination uses
+  the same `Eliminated` record/discharge shape as `eliminate`
+
+### Why
+- Keeps runtime and row semantics aligned for duplicate-index selection.
+- Avoids splitting API usage into "generic single-target path" vs "duplicate
+  index path" with different result contracts.
+- Preserves the feature-by-feature equivalence story with Kyo-style effect
+  elimination steps.
+
+### Tradeoffs
+- Requires maintaining two projection families (`RemoveOp` and `SelectOp`)
+  until API unification is completed.
+- Row and runtime evidence are still separate classes rather than one coupled
+  synthesis class.
+
+### Consequences
+- Index-based duplicate elimination now has the same discharge contract at API
+  level as non-duplicate elimination.
+- The next remaining step is consolidating these handler-selection mechanisms
+  under one stable public kernel interface.
