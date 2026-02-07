@@ -355,3 +355,67 @@ and expose generic `lift` / `suspend`.
 ### Consequences
 - Nested-stack examples can now use generic injection APIs.
 - Next step is matching this with generic n-ary handling/removal APIs.
+
+## ADR-0011: Add executable re-association transforms for nested sums
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectReassoc.lean`
+
+### Context
+Head-oriented handlers are easiest to implement, but targeted effects are often
+not at the head of a nested sum stack. We needed a runtime mechanism to reorder
+stacks before handling, without introducing unsafe casts.
+
+### Decision
+Add executable transforms:
+- `swap` for binary stacks
+- `assocRight` / `assocLeft` for nested stacks
+
+with dependent result transport helpers (`swapRes`, `assocRightRes`,
+`assocLeftRes`) to keep continuation typing correct.
+
+### Why
+- Enables “reorder then handle” workflow for non-head effects.
+- Keeps transforms explicit and auditable.
+- Reuses existing binary dispatcher/handler machinery.
+
+### Tradeoffs
+- Reordering is still manual and explicit.
+- No automated normal-form synthesis yet.
+
+### Consequences
+- We now have injection + re-association building blocks for n-ary handling.
+- Next step is deriving generic handler search/synthesis over these primitives.
+
+## ADR-0012: Add reusable non-head 3-effect handler combinators
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectReassoc.lean`
+
+### Context
+`swap`/`assoc` enabled manual reorder+handle flows, but call sites still had to
+spell each transformation sequence explicitly.
+
+### Decision
+Add high-level combinators over right-associated 3-effect stacks:
+- `handleMiddle : E1 + (E2 + E3) -> E1 + E3`
+- `handleLast : E1 + (E2 + E3) -> E1 + E2`
+
+### Why
+- Encapsulates reorder choreography behind stable APIs.
+- Reduces boilerplate at handler call sites.
+- Keeps implementation fully explicit and type-safe.
+
+### Tradeoffs
+- Scope is currently 3-effect right-associated stacks.
+- General n-ary synthesis is still pending.
+
+### Consequences
+- Non-head handling has practical reusable APIs now.
+- Next step is deriving these combinators generically from membership evidence.

@@ -125,6 +125,14 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectNest.lean`
     via `Inject`, generic `lift`/`suspend`, and validated stack example
     (`evalStack_case1_spec`, `evalStack_case2_spec`).
+17. [x] Add executable nested-sum re-association transforms.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectReassoc.lean`
+    via `swap`, `assocRight`, `assocLeft`, with validation for handling a
+    non-head effect by reorder+handle (`eval_case1_spec`, `eval_case2_spec`).
+18. [x] Add reusable 3-effect non-head handler combinators.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectReassoc.lean`
+    via `handleMiddle` and `handleLast`, with helper-based validation
+    (`eval_auto_case1_spec`, `eval_auto_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
