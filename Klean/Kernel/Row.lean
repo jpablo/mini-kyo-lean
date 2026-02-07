@@ -204,6 +204,64 @@ theorem semEq_append_assoc (a b c : Row) : ((a ++ b) ++ c) ≈ (a ++ (b ++ c)) :
   · intro h
     simpa [append_assoc a b c] using h
 
+/-- `SemEq` defines an equivalence relation on rows. -/
+theorem semEq_isEquivalence : Equivalence SemEq where
+  refl := semEq_refl
+  symm := semEq_symm
+  trans := semEq_trans
+
+instance : Setoid Row where
+  r := SemEq
+  iseqv := semEq_isEquivalence
+
+/-- Canonical setoid instance for row semantic equivalence. -/
+def rowSetoid : Setoid Row := inferInstance
+
+/--
+Quotient row semantics where rows are identified by semantic equivalence (`≈`).
+
+This is a canonical semantic boundary without requiring a concrete normalized
+syntactic representation.
+-/
+abbrev RowSet := Quotient rowSetoid
+
+/-- Inject a syntactic row into the semantic row quotient. -/
+def toRowSet (row : Row) : RowSet :=
+  Quotient.mk rowSetoid row
+
+/-- Append on semantic rows, well-defined modulo `≈`. -/
+def appendRowSet (lhs rhs : RowSet) : RowSet :=
+  Quotient.liftOn₂ lhs rhs
+    (fun lhs rhs => Quotient.mk _ (lhs ++ rhs))
+    (by
+      intro lhs rhs lhs' rhs' hL hR
+      exact Quotient.sound (semEq_trans (semEq_append_congr_left hL) (semEq_append_congr_right hR)))
+
+instance : Append RowSet where
+  append := appendRowSet
+
+/-- Singleton semantic row. -/
+def singletonRowSet (effect : Type) : RowSet :=
+  toRowSet (singleton effect)
+
+/-- Append is commutative in the semantic row quotient. -/
+theorem appendRowSet_comm (lhs rhs : RowSet) : lhs ++ rhs = rhs ++ lhs := by
+  refine Quotient.inductionOn₂ lhs rhs ?_
+  intro a b
+  exact Quotient.sound (semEq_append_comm a b)
+
+/-- Append is idempotent in the semantic row quotient. -/
+theorem appendRowSet_idem (row : RowSet) : row ++ row = row := by
+  refine Quotient.inductionOn row ?_
+  intro a
+  exact Quotient.sound (semEq_append_idem a)
+
+/-- Append is associative in the semantic row quotient. -/
+theorem appendRowSet_assoc (a b c : RowSet) : (a ++ b) ++ c = a ++ (b ++ c) := by
+  refine Quotient.inductionOn₃ a b c ?_
+  intro a' b' c'
+  exact Quotient.sound (semEq_append_assoc a' b' c')
+
 end Row
 end Kernel
 end Klean

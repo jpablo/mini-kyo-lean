@@ -84,7 +84,7 @@ Mechanically possible, but we need normalized row laws to keep type signatures e
 We need a typed “remove one `E` from row” operation with proofs.
 
 8. Canonical equivalence relation for rows  
-Implemented (`Row.SemEq`), but not yet integrated across all kernel APIs.
+Implemented (`Row.SemEq`) and exposed through quotient boundary (`RowSet`), but not yet integrated across all kernel APIs.
 
 ## 4. Why `Row` Was Chosen
 
@@ -123,10 +123,12 @@ A replacement is accepted only when each item has either:
   - `semEq_append_congr_left`
   - `semEq_append_congr_right`
   - `semEq_append_assoc`
+- Canonical semantic API boundary exists:
+  - `RowSet`
+  - `appendRowSet` with commutativity/idempotence/associativity equalities.
 - Minimal pending kernel skeleton exists (`Pending`, `flatMap`, `Effect.defer`).
 - Abort/Env/Var acceptance semantics are validated in
   `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Validation.lean`
   via standalone fuel-bounded interpreters.
 - Main gap: syntactic normalization/canonical form is not yet encoded.
-- Next critical step: integrate `SemEq` into kernel API contracts and add a
-  canonical normalization strategy.
+- Next critical step: integrate `SemEq`/`RowSet` into kernel API contracts.
