@@ -451,3 +451,68 @@ Introduce `HandleAt3` and `handleAt3`:
 - 3-effect handler call sites can target effects declaratively.
 - Next step is lifting this pattern to generalized n-ary stacks with explicit
   duplicate-handling policy.
+
+## ADR-0014: Introduce recursive generic handler core (`EffectHandleN`)
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleN.lean`
+
+### Context
+`HandleAt3` improved ergonomics for 3-effect stacks, but we still lacked a
+single recursive mechanism for deeper nested stacks.
+
+### Decision
+Add:
+- `OpProjection` (hit/pass classification for one operation)
+- `RemoveOp` (recursive operation-level projection evidence)
+- `handleByRemoveOp` (generic one-target elimination by projection)
+
+### Why
+- Provides a reusable n-ary-oriented core over nested sums.
+- Avoids hardcoding handler combinators for each arity.
+- Works with existing runtime encoding and validates on a 4-effect stack.
+
+### Tradeoffs
+- Current recursion is left-biased over nested sums.
+- Rightmost-leaf target elimination may still require explicit reordering or
+  direct binary handlers.
+
+### Consequences
+- We now have a generic handling engine plus arity-specific ergonomics.
+- Next step is making elimination fully position-agnostic and aligning it with
+  row-removal witnesses end-to-end.
+
+## ADR-0015: Use terminal marker (`VoidEffect`) to complete rightmost-leaf elimination
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleN.lean`
+
+### Context
+The initial `RemoveOp` recursion handled deep targets, but when the target was
+the final rightmost leaf, residual typing required a terminal stack marker.
+
+### Decision
+Add:
+- `VoidEffect` as the terminal no-op residual
+- `removeOpSelf : RemoveOp Target Target VoidEffect`
+- `pruneVoidRight : Pending1 (E + VoidEffect) A -> Pending1 E A`
+
+### Why
+- Makes generic elimination total for right-associated stacks.
+- Avoids special-case fallback handlers in validation pipelines.
+- Keeps residual simplification explicit and executable.
+
+### Tradeoffs
+- Introduces an explicit terminal marker in intermediate residual types.
+- Normalization (e.g., automatic pruning) is still manual.
+
+### Consequences
+- Generic handling now covers rightmost-leaf targets as well.
+- Remaining work is integrating this runtime machinery with row-level proofs and
+  normalization policy.

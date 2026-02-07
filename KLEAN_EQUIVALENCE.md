@@ -186,6 +186,13 @@ A replacement is accepted only when each item has either:
   - `HandleAt3`
   - `handleAt3`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandle3.lean`.
+- Recursive generic target handling core now exists:
+  - `OpProjection`
+  - `RemoveOp`
+  - `handleByRemoveOp`
+  - `VoidEffect`
+  - `pruneVoidRight`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleN.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
@@ -198,4 +205,4 @@ A replacement is accepted only when each item has either:
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - general n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending` (current n=2/3 runtime and proof composition exists, plus 3-effect handler selection abstraction, but generic n-ary handling/removal synthesis is still pending).
+  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending` (runtime n-ary nested-sum handling now exists, but row-proof integration and duplicate-effect policy are still pending).

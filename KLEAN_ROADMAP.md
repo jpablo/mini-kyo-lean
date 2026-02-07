@@ -137,6 +137,11 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandle3.lean`
     via `HandleAt3` + `handleAt3` (head/middle/last instances), with validation
     (`eval_tc_case1_spec`, `eval_tc_case2_spec`).
+20. [x] Add recursive generic target handling core for nested sums.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleN.lean`
+    via `RemoveOp`, `OpProjection`, and `handleByRemoveOp`, plus
+    terminal-right pruning (`VoidEffect`, `pruneVoidRight`) for rightmost-leaf
+    elimination, with 4-effect validation (`eval4_case1_spec`, `eval4_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
