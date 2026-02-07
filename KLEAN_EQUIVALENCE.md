@@ -160,6 +160,11 @@ A replacement is accepted only when each item has either:
   - `handleRemoved_obligations`
   - `handleRemoved_discharge_shape`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge.lean`.
+- Executable multi-effect dispatch prototype exists (operation-sum encoding):
+  - `EffectSum.Op` + `EffectSig` instance
+  - `handleLeft` / `handleRight`
+  - mixed `Abort + Env` validation
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - executable multi-effect dispatch/elimination remains to be integrated with `Pending`.
+  - row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending`.

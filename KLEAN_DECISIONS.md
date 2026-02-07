@@ -196,3 +196,35 @@ signature and returning `Pending A out`.
 ### Consequences
 - `Pending` obligations and `Discharge` now align on the same row-removal proof.
 - Remaining gap is implementation-level multi-effect request dispatch.
+
+## ADR-0006: Add operation-sum executable multi-effect dispatcher (`EffectSum`)
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum.lean`
+
+### Context
+We needed an executable answer to “how do we route multiple effect families at
+runtime?” while row-indexed dispatch is still under construction.
+
+### Decision
+Introduce `EffectSum`:
+- sum-composed operation type (`Op.left` / `Op.right`)
+- `EffectSig` instance for the sum
+- interpreters `handleLeft` and `handleRight` that handle one side and forward
+  the other
+
+### Why
+- Provides concrete multi-effect runtime behavior now.
+- Keeps typed operation/result relationships intact.
+- Avoids blocking on row-indexed dispatcher design.
+
+### Tradeoffs
+- Current composition is binary and explicit (`Effect E1 E2`).
+- Not yet connected to row-indexed `Pending` obligations for generic routing.
+
+### Consequences
+- We can already execute mixed-effect programs with handler forwarding.
+- Next step is to connect this dispatch shape to row membership/removal evidence.

@@ -5,6 +5,7 @@ import Klean.Kernel.Effect
 import Klean.Kernel.ArrowEffect
 import Klean.Kernel.ContextEffect
 import Klean.Kernel.Discharge
+import Klean.Kernel.EffectSum
 import Klean.Kernel.Validation
 
 /-!
@@ -18,5 +19,6 @@ This module re-exports the current kernel foundation:
 - single-effect request/handler facade (`ArrowEffect`)
 - single-effect context requests/handlers (`ContextEffect`)
 - row-aware discharge bridge (`Discharge`)
+- executable 2-effect dispatch combinator (`EffectSum`)
 - validation scenarios (`Validation`)
 -/

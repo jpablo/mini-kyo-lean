@@ -105,6 +105,10 @@ Acceptance:
 11. [x] Add row-aware single-effect handler discharge bridge.
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge.lean`
     via `handleRemoved`, `handleRemoved_obligations`, and `handleRemoved_discharge_shape`.
+12. [x] Add executable two-effect dispatch combinator.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum.lean`
+    via `liftLeft`/`liftRight`, `handleLeft`/`handleRight`, and validated mixed
+    `Abort + Env` scenarios (`mixedEval1_spec`, `mixedEval2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
