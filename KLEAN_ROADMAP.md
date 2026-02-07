@@ -151,6 +151,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNCoupled.lean`
     via `Step` + `handleStep`, with 4-effect coupled validation
     (`evalCoupled_case1_spec`, `evalCoupled_case2_spec`).
+23. [x] Add higher-level generic elimination facade.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+    via `Eliminated`, `eliminate`, and `discharge_two`, with facade validation
+    (`evalApi_case1_spec`, `evalApi_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

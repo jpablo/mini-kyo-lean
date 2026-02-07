@@ -202,6 +202,11 @@ A replacement is accepted only when each item has either:
   - `Step`
   - `handleStep`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNCoupled.lean`.
+- Higher-level generic elimination facade now exists:
+  - `Eliminated`
+  - `eliminate`
+  - `discharge_two`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
@@ -214,4 +219,4 @@ A replacement is accepted only when each item has either:
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime handling, row bridge, and coupled step API now exist, but duplication policy and a finalized public kernel API are still pending).
+  - full n-ary row-indexed multi-effect dispatch/elimination remains to be integrated directly with `Pending` (runtime handling, row bridge, coupled steps, and facade API now exist, but duplication policy and final surface stabilization are still pending).

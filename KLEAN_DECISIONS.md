@@ -580,3 +580,35 @@ Introduce:
 ### Consequences
 - Runtime and row proof flows can now be advanced together by construction.
 - Next step is deciding final external API and duplicate-effect semantics.
+
+## ADR-0018: Add higher-level generic elimination facade (`EffectHandleNApi`)
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+
+### Context
+`EffectHandleNCoupled` provided paired runtime+proof steps, but users still had
+to orchestrate raw step plumbing directly.
+
+### Decision
+Introduce a thin facade:
+- `Eliminated` record
+- `eliminate` constructor
+- `discharge_two` composition theorem
+
+### Why
+- Gives a cleaner public-facing entry point.
+- Preserves full typed guarantees from lower layers.
+- Reduces boilerplate in multi-step elimination call sites.
+
+### Tradeoffs
+- Still explicit/staged across elimination steps.
+- Final ergonomic API (including duplicate policy) is not finalized.
+
+### Consequences
+- We now have a coherent layered stack: runtime core -> row bridge -> coupled
+  steps -> facade API.
+- Remaining work is finalizing/stabilizing this as the external kernel surface.
