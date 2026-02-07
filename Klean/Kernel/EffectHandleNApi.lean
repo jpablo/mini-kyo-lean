@@ -5,8 +5,8 @@ Higher-level facade for generic nested effect elimination.
 
 This module exposes a compact API:
 - `eliminate` for one target effect
-- composable elimination records with discharge equalities
-- helper theorem for combining two elimination steps
+- fixed-arity composition (`eliminateTwo`, `eliminateThree`)
+- composable elimination plans (`ElimPlan`) for n-step chaining
 -/
 
 namespace Klean
@@ -48,6 +48,65 @@ structure Eliminated3 (t1 t2 t3 S out A : Type)
     Row.toRowSet (stackRow S) =
       ((Row.singletonRowSet t1 ++ Row.singletonRowSet t2) ++ Row.singletonRowSet t3) ++
       Row.toRowSet (stackRow out)
+
+/--
+Composable elimination plan from stack `S` to stack `out`.
+
+`removed` tracks the semantic row-set of eliminated effects in plan order.
+-/
+structure ElimPlan (S out A : Type)
+    [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out] where
+  removed : Row.RowSet
+  apply : Pending1 S A → Pending1 out A
+  discharge :
+    Row.toRowSet (stackRow S) = removed ++ Row.toRowSet (stackRow out)
+
+/-- Identity elimination plan (remove nothing). -/
+def ElimPlan.id [EffectSig S] [StackRow S] : ElimPlan S S A where
+  removed := Row.toRowSet Row.empty
+  apply := fun program => program
+  discharge := by
+    change Row.toRowSet (stackRow S) = Row.toRowSet (Row.empty ++ stackRow S)
+    rfl
+
+/--
+Single-step indexed elimination as a composable plan.
+-/
+def ElimPlan.singleAt
+    [EffectSig target] [EffectSig S] [EffectSig out]
+    [StackRow S] [StackRow out]
+    [SelectOp target skip S out]
+    [SelectOpRow target skip S out]
+    (onTarget :
+      {X : Type} →
+      (op : EffectSig.Op (E := target) X) →
+      (EffectSig.Res (E := target) op → Pending1 out A) →
+      Pending1 out A) :
+    ElimPlan S out A where
+  removed := Row.singletonRowSet target
+  apply := handleAtIndex (target := target) (skip := skip) (S := S) (out := out) onTarget
+  discharge := stackRow_discharge_at (target := target) (skip := skip) (S := S) (out := out)
+
+/--
+Sequential composition of elimination plans.
+-/
+def ElimPlan.then
+    [EffectSig S] [EffectSig mid] [EffectSig out]
+    [StackRow S] [StackRow mid] [StackRow out]
+    (first : ElimPlan S mid A)
+    (second : ElimPlan mid out A) :
+    ElimPlan S out A where
+  removed := first.removed ++ second.removed
+  apply := fun program => second.apply (first.apply program)
+  discharge := by
+    calc
+      Row.toRowSet (stackRow S) = first.removed ++ Row.toRowSet (stackRow mid) := first.discharge
+      _ = first.removed ++ (second.removed ++ Row.toRowSet (stackRow out)) := by
+        rw [second.discharge]
+      _ = (first.removed ++ second.removed) ++ Row.toRowSet (stackRow out) := by
+        symm
+        exact Row.appendRowSet_assoc _ _ _
 
 /-- Eliminate the first (leftmost) occurrence of one target effect from `S`. -/
 def eliminate
@@ -354,6 +413,60 @@ theorem evalThree_case1_spec : evalThree_case1 = some (13, 13) := by
   native_decide
 
 theorem evalThree_case2_spec : evalThree_case2 = some (10, 77) := by
+  native_decide
+
+def planAbort :
+    ElimPlan Stack4 (EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect)) Nat :=
+  ElimPlan.singleAt (target := AbortE) (skip := 0)
+    (S := Stack4) (out := EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
+    (onTarget := fun {_X} op _cont =>
+      match op with
+      | .fail _ => .pure 77)
+
+def planEnv (env : Nat) :
+    ElimPlan (EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
+      (EffectSum.Effect VarE DummyEffect) Nat :=
+  ElimPlan.singleAt (target := EnvE) (skip := 0)
+    (S := EffectSum.Effect EnvE (EffectSum.Effect VarE DummyEffect))
+    (out := EffectSum.Effect VarE DummyEffect)
+    (onTarget := fun {_X} op cont =>
+      match op with
+      | .get => cont env)
+
+def planDummy :
+    ElimPlan (EffectSum.Effect VarE DummyEffect) (EffectSum.Effect VarE VoidEffect) Nat :=
+  ElimPlan.singleAt (target := DummyEffect) (skip := 0)
+    (S := EffectSum.Effect VarE DummyEffect)
+    (out := EffectSum.Effect VarE VoidEffect)
+    (onTarget := fun {_X} op cont =>
+      match op with
+      | .ping => cont ())
+
+def planThreeSteps (env : Nat) :
+    ElimPlan Stack4 (EffectSum.Effect VarE VoidEffect) Nat :=
+  ElimPlan.then (A := Nat)
+    (ElimPlan.then (A := Nat) planAbort (planEnv env))
+    planDummy
+
+theorem planThreeSteps_discharge (env : Nat) :
+    Row.toRowSet (stackRow Stack4) =
+      ((Row.singletonRowSet AbortE ++ Row.singletonRowSet EnvE) ++ Row.singletonRowSet DummyEffect) ++
+      Row.toRowSet (stackRow (EffectSum.Effect VarE VoidEffect)) := by
+  simpa [planThreeSteps] using (planThreeSteps env).discharge
+
+def evalPlan (env state fuel : Nat) : Option (Nat × Nat) :=
+  Var.run (Value := Nat) state fuel (pruneVoidRight ((planThreeSteps env).apply program4))
+
+def evalPlan_case1 : Option (Nat × Nat) :=
+  evalPlan 3 10 48
+
+def evalPlan_case2 : Option (Nat × Nat) :=
+  evalPlan 0 10 48
+
+theorem evalPlan_case1_spec : evalPlan_case1 = some (13, 13) := by
+  native_decide
+
+theorem evalPlan_case2_spec : evalPlan_case2 = some (10, 77) := by
   native_decide
 
 def elimFirstAt :

@@ -854,3 +854,43 @@ Add:
 - Next step is deciding between:
   - continuing with explicit small-arity combinators (`2/3/...`), or
   - introducing a single n-step typed composition encoding.
+
+## ADR-0026: Introduce composable n-step elimination plans (`ElimPlan`)
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+
+### Context
+Even with `eliminateTwo` and `eliminateThree`, scaling to longer handler chains
+would require adding `eliminateFour`, `eliminateFive`, etc., and replicating
+row-discharge composition lemmas per arity.
+
+### Decision
+Add a generic composable facade object:
+- `ElimPlan S out A` with
+  - `removed : Row.RowSet`
+  - `apply : Pending1 S A → Pending1 out A`
+  - `discharge : toRowSet(stackRow S) = removed ++ toRowSet(stackRow out)`
+- constructors/combinators:
+  - `ElimPlan.id`
+  - `ElimPlan.singleAt`
+  - `ElimPlan.then`
+
+### Why
+- Provides n-step composition without proliferating fixed-arity APIs.
+- Preserves executable behavior and semantic row accounting in one artifact.
+- Reuses existing indexed selection machinery for each single step.
+
+### Tradeoffs
+- Plan composition currently remains explicit in user code (no syntax sugar).
+- `removed` tracks semantic rowset append order, not a normalized canonical list.
+
+### Consequences
+- The kernel now supports both:
+  - ergonomic fixed-arity helpers (`eliminateTwo`, `eliminateThree`)
+  - fully composable n-step elimination plans.
+- Next step is deciding which API should be primary for external users and how
+  to expose plan-building ergonomics.

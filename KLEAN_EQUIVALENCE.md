@@ -239,6 +239,11 @@ A replacement is accepted only when each item has either:
   - `eliminateThreeAt`
   - `eliminateThree`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
+- Generic n-step elimination planning now exists:
+  - `ElimPlan`
+  - `ElimPlan.singleAt`
+  - `ElimPlan.then`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`

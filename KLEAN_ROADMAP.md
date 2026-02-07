@@ -185,6 +185,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
     via `Eliminated3`, `discharge_three`, `eliminateThreeAt`, and `eliminateThree`,
     with validation (`evalThree_case1_spec`, `evalThree_case2_spec`).
+31. [x] Add generic composable n-step elimination plan API.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+    via `ElimPlan`, `ElimPlan.singleAt`, and `ElimPlan.then`, with plan-based
+    validation (`evalPlan_case1_spec`, `evalPlan_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
