@@ -115,5 +115,6 @@ A replacement is accepted only when each item has either:
 ## 6. Current Status Summary
 
 - Good foundation: open composition + membership proofs are in place.
+- Minimal pending kernel skeleton exists (`Pending`, `flatMap`, `Effect.defer`).
 - Main gap: semantic set-like behavior (commutativity/idempotence) is not yet encoded.
 - Next critical step: choose and implement row normalization/equivalence strategy.

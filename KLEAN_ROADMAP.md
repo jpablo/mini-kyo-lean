@@ -74,9 +74,9 @@ Acceptance:
 - Higher-level APIs compose over stable primitives without kernel changes.
 
 ## Immediate Next Work Items
-1. Implement `Klean/Kernel/Row.lean` and freeze row design.
-2. Implement minimal `Pending` + `Effect.defer` against that row.
-3. Port one validation effect trio (`Abort`, `Env`, `Var`) as kernel acceptance tests.
+1. [x] Implement `Klean/Kernel/Row.lean` and freeze row design.
+2. [x] Implement minimal `Pending` + `Effect.defer` against that row.
+3. [ ] Port one validation effect trio (`Abort`, `Env`, `Var`) as kernel acceptance tests.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
