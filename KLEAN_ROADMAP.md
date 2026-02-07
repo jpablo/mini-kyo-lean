@@ -94,6 +94,14 @@ Acceptance:
 8. [x] Port minimal single-effect `ArrowEffect` suspend/handle shape.
    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ArrowEffect.lean`
    with generic `suspend`, `suspendWith`, and fold-based elimination into closed `Pending`.
+9. [x] Add row-level one-step removal/discharge witness and decomposition theorem.
+   Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Row.lean`
+   via `Remove`, `exists_remove_of_contains`, and
+   `semEq_append_singleton_of_remove` / `exists_remove_decomposition` /
+   `toRowSet_remove_discharge`.
+10. [x] Bridge row removal witness into `Pending` obligation contracts.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Pending.lean`
+    via `obligations_decompose_of_contains` and `obligations_discharge_shape`.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

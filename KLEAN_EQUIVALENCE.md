@@ -81,8 +81,13 @@ Mechanically possible, but we need normalized row laws to keep type signatures e
 ### Not implemented yet
 
 7. Explicit discharge/remove operation  
-Row-level discharge/remove (`E & S -> S`) is still pending.  
-Single-effect discharge is now implemented in
+Implemented at proof level in
+`/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Row.lean`
+via `Remove` and decomposition theorems
+(`exists_remove_decomposition`, `semEq_append_singleton_of_remove`).  
+Still pending: integration of this row-level witness into generic multi-effect
+`Pending` handler APIs with a direct `E & S -> S` eliminator contract.
+Single-effect discharge remains implemented in
 `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ContextEffect.lean`
 via handler elimination into `Pending _ Row.empty`.
 
@@ -139,6 +144,17 @@ A replacement is accepted only when each item has either:
   - `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ArrowEffect.lean`
   - `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Pending1.lean`
   - `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ContextEffect.lean`
+- Row-level one-step discharge witness exists:
+  - `Remove`
+  - `exists_remove_of_contains`
+  - `semEq_append_singleton_of_remove`
+  - `exists_remove_decomposition`
+  - `toRowSet_remove_discharge`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Row.lean`.
+- `Pending` obligation contracts now expose discharge shape from membership:
+  - `obligations_decompose_of_contains`
+  - `obligations_discharge_shape`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Pending.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
   - row-aware multi-effect handler elimination remains to be integrated with `Pending`.

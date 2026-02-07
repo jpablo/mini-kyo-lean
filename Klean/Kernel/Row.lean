@@ -96,6 +96,48 @@ theorem contains_append_iff {effect : Type} {lhs rhs : Row} :
         exact contains_append_right (lhs := lhs) hright
 
 /--
+Proof witness that `out` is `src` with one occurrence of `effect` removed.
+-/
+inductive Remove (effect : Type) : Row → Row → Prop where
+  | head {tail : Row} : Remove effect (.cons effect tail) tail
+  | tail {head : Type} {tail out : Row} : Remove effect tail out → Remove effect (.cons head tail) (.cons head out)
+
+/-- Membership implies that some one-step removal witness exists. -/
+theorem exists_remove_of_contains {effect : Type} {row : Row} :
+    Contains effect row → ∃ out, Remove effect row out := by
+  intro hContains
+  induction hContains with
+  | here =>
+      exact ⟨_, Remove.head⟩
+  | there hTail ih =>
+      rcases ih with ⟨out, hRemove⟩
+      exact ⟨_, Remove.tail hRemove⟩
+
+/-- A removed row can always be embedded back into the source row. -/
+theorem contains_lift_remove {effect other : Type} {src out : Row} :
+    Remove effect src out → Contains other out → Contains other src := by
+  intro hRemove hOut
+  induction hRemove with
+  | head =>
+      exact Contains.there hOut
+  | tail hTail ih =>
+      cases hOut with
+      | here =>
+          exact Contains.here
+      | there hOutTail =>
+          exact Contains.there (ih hOutTail)
+
+/-- A `Remove` witness guarantees membership of the removed effect in the source row. -/
+theorem contains_of_remove {effect : Type} {src out : Row} :
+    Remove effect src out → Contains effect src := by
+  intro hRemove
+  induction hRemove with
+  | head =>
+      exact Contains.here
+  | tail _ ih =>
+      exact Contains.there ih
+
+/--
 Semantic row equivalence: two rows are equivalent if they have the same
 effect membership for every effect type.
 -/
@@ -115,6 +157,24 @@ theorem semEq_symm {lhs rhs : Row} : lhs ≈ rhs → rhs ≈ lhs := by
 theorem semEq_trans {a b c : Row} : a ≈ b → b ≈ c → a ≈ c := by
   intro hab hbc effect
   exact Iff.trans (hab (effect := effect)) (hbc (effect := effect))
+
+/-- Semantic equivalence is stable under adding the same head constructor. -/
+theorem semEq_cons_congr {head : Type} {tail1 tail2 : Row} :
+    tail1 ≈ tail2 → (Row.cons head tail1) ≈ (Row.cons head tail2) := by
+  intro h effect
+  constructor
+  · intro hm
+    cases hm with
+    | here =>
+        exact Contains.here
+    | there hTail =>
+        exact Contains.there ((h (effect := effect)).1 hTail)
+  · intro hm
+    cases hm with
+    | here =>
+        exact Contains.here
+    | there hTail =>
+        exact Contains.there ((h (effect := effect)).2 hTail)
 
 /--
 Append is commutative at semantic level (membership), even though row syntax is
@@ -204,6 +264,49 @@ theorem semEq_append_assoc (a b c : Row) : ((a ++ b) ++ c) ≈ (a ++ (b ++ c)) :
   · intro h
     simpa [append_assoc a b c] using h
 
+/--
+Any explicit removal witness decomposes a row semantically as:
+`src ≈ out ++ [effect]`.
+-/
+theorem semEq_append_singleton_of_remove {effect : Type} {src out : Row} :
+    Remove effect src out → src ≈ (out ++ singleton effect) := by
+  intro hRemove
+  induction hRemove with
+  | @head tail =>
+      intro probe
+      constructor
+      · intro hMem
+        cases hMem with
+        | here =>
+            exact contains_append_right (lhs := tail) (by simpa [singleton] using (Contains.here : Contains effect (singleton effect)))
+        | there hTail =>
+            exact contains_append_left (rhs := singleton effect) hTail
+      · intro hMem
+        have hSplit := (contains_append_iff (lhs := tail) (rhs := singleton effect)).1 hMem
+        cases hSplit with
+        | inl hTail =>
+            exact Contains.there hTail
+        | inr hSingleton =>
+            cases hSingleton with
+            | here =>
+                exact Contains.here
+            | there hImpossible =>
+                cases hImpossible
+  | @tail head tail out hTail ih =>
+      have hCons : (Row.cons head tail) ≈ (Row.cons head (out ++ singleton effect)) := semEq_cons_congr ih
+      change (Row.cons head tail) ≈ (Row.cons head (out ++ singleton effect))
+      exact hCons
+
+/--
+If `effect` is contained in `row`, we can exhibit a row `out` such that
+`row` is semantically equivalent to `out ++ [effect]`.
+-/
+theorem exists_remove_decomposition {effect : Type} {row : Row} :
+    Contains effect row → ∃ out, Remove effect row out ∧ row ≈ (out ++ singleton effect) := by
+  intro hContains
+  rcases exists_remove_of_contains hContains with ⟨out, hRemove⟩
+  exact ⟨out, hRemove, semEq_append_singleton_of_remove hRemove⟩
+
 /-- `SemEq` defines an equivalence relation on rows. -/
 theorem semEq_isEquivalence : Equivalence SemEq where
   refl := semEq_refl
@@ -243,6 +346,20 @@ instance : Append RowSet where
 /-- Singleton semantic row. -/
 def singletonRowSet (effect : Type) : RowSet :=
   toRowSet (singleton effect)
+
+/--
+Canonical semantic discharge equality induced by a one-step removal witness.
+-/
+theorem toRowSet_remove_discharge {effect : Type} {src out : Row} :
+    Remove effect src out → toRowSet src = singletonRowSet effect ++ toRowSet out := by
+  intro hRemove
+  have hDecomp : SemEq src (out ++ singleton effect) := semEq_append_singleton_of_remove hRemove
+  have hComm : toRowSet (out ++ singleton effect) = toRowSet (singleton effect ++ out) := by
+    exact Quotient.sound (semEq_append_comm out (singleton effect))
+  calc
+    toRowSet src = toRowSet (out ++ singleton effect) := Quotient.sound hDecomp
+    _ = toRowSet (singleton effect ++ out) := hComm
+    _ = singletonRowSet effect ++ toRowSet out := by rfl
 
 /-- Append is commutative in the semantic row quotient. -/
 theorem appendRowSet_comm (lhs rhs : RowSet) : lhs ++ rhs = rhs ++ lhs := by

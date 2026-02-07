@@ -126,3 +126,39 @@ Define `ArrowEffect.fold` as the generic eliminator from `Pending1` into closed
 - Future effects can share one elimination primitive.
 - Multi-effect dispatch can later replace/extend `fold` internals without
   changing effect-local APIs.
+
+## ADR-0004: Model row discharge as proof-level `Remove` witness
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Row.lean`
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/KLEAN_EQUIVALENCE.md`
+
+### Context
+We need an explicit replacement for Scala’s “remove handled effect from `E & S`”.
+In Lean, current row membership (`Contains`) is in `Prop`. That means we cannot
+compute data rows directly from membership proofs (no elimination from `Prop`
+into data in this setting).
+
+### Decision
+Represent removal/discharge first as a proof witness:
+- `Remove effect src out`
+- `exists_remove_of_contains`
+- `semEq_append_singleton_of_remove`
+- `exists_remove_decomposition`
+
+### Why
+- Gives an explicit, checkable discharge contract now.
+- Matches the semantic requirement (“`src` is `out` plus handled effect”).
+- Avoids forcing a premature redesign of membership indices solely for
+  computational extraction.
+
+### Tradeoffs
+- Current discharge is proof-level, not an executable row-transform function.
+- Generic handler APIs still need integration work to consume this witness.
+
+### Consequences
+- The equivalence contract now has a concrete Lean artifact for row removal.
+- Next step is to thread `Remove` into row-aware `Pending` handler signatures.

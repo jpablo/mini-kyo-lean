@@ -92,6 +92,31 @@ theorem flatMap_obligations_assoc {A B C : Type} {S1 S2 S3 : Row}
     Row.toRowSet ((S1 ++ S2) ++ S3) = Row.toRowSet (S1 ++ (S2 ++ S3)) := by
   exact Quotient.sound (Row.semEq_append_assoc S1 S2 S3)
 
+/--
+If an effect `E` is known to be present in obligations `S`, we can expose a
+discharge decomposition `S ≈ out ++ [E]`.
+-/
+theorem obligations_decompose_of_contains {A : Type} {S : Row} {E : Type}
+    (self : Pending A S) (hContains : Row.Contains E S) :
+    ∃ out : Row, Row.Remove E S out ∧ obligations self = Row.toRowSet (out ++ Row.singleton E) := by
+  rcases Row.exists_remove_decomposition (effect := E) (row := S) hContains with
+    ⟨out, hRemove, hSem⟩
+  refine ⟨out, hRemove, ?_⟩
+  change Row.toRowSet S = Row.toRowSet (out ++ Row.singleton E)
+  exact Quotient.sound hSem
+
+/--
+Discharge decomposition in canonical semantic form: `[E] ++ out`.
+-/
+theorem obligations_discharge_shape {A : Type} {S : Row} {E : Type}
+    (self : Pending A S) (hContains : Row.Contains E S) :
+    ∃ out : Row, Row.Remove E S out ∧ obligations self = Row.singletonRowSet E ++ Row.toRowSet out := by
+  rcases Row.exists_remove_of_contains (effect := E) (row := S) hContains with
+    ⟨out, hRemove⟩
+  refine ⟨out, hRemove, ?_⟩
+  change Row.toRowSet S = Row.singletonRowSet E ++ Row.toRowSet out
+  exact Row.toRowSet_remove_discharge hRemove
+
 end Pending
 end Kernel
 end Klean
