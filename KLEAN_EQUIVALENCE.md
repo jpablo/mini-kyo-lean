@@ -165,6 +165,11 @@ A replacement is accepted only when each item has either:
   - `handleLeft` / `handleRight`
   - mixed `Abort + Env` validation
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum.lean`.
+- Row-aware 2-effect composition now exists:
+  - `handleTwoRemoved`
+  - `handleTwoRemoved_obligations`
+  - `handleTwoRemoved_discharge_shape`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge2.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending`.
+  - general n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending`.

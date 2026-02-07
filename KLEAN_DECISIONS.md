@@ -228,3 +228,34 @@ Introduce `EffectSum`:
 ### Consequences
 - We can already execute mixed-effect programs with handler forwarding.
 - Next step is to connect this dispatch shape to row membership/removal evidence.
+
+## ADR-0007: Compose summed dispatch with sequential row removals (`Discharge2`)
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge2.lean`
+
+### Context
+After adding executable two-effect dispatch (`EffectSum`) and single-step
+row-aware discharge (`Discharge`), we still lacked a typed composition story for
+handling two effects while preserving row-removal evidence end-to-end.
+
+### Decision
+Add `Discharge2.handleTwoRemoved`, which:
+1. handles `E1` from `EffectSum.Effect E1 E2` into `Pending1 E2`
+2. discharges `E2` into residual row `S2` using `Row.Remove` proof
+
+### Why
+- Demonstrates concrete composition of runtime dispatch + row proofs.
+- Keeps the proof obligations explicit in the API.
+- Provides a stepping stone toward generalized n-ary handlers.
+
+### Tradeoffs
+- Composition is currently sequential and binary.
+- Still not a single generic dispatcher for arbitrary row shapes.
+
+### Consequences
+- Two-effect elimination now has a documented and executable typed path.
+- Remaining work is generalized row-indexed handler synthesis/dispatch.

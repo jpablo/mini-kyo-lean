@@ -109,6 +109,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectSum.lean`
     via `liftLeft`/`liftRight`, `handleLeft`/`handleRight`, and validated mixed
     `Abort + Env` scenarios (`mixedEval1_spec`, `mixedEval2_spec`).
+13. [x] Compose two-step row-aware discharge for summed effects.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge2.lean`
+    via `handleTwoRemoved`, `handleTwoRemoved_obligations`, and
+    `handleTwoRemoved_discharge_shape`.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
