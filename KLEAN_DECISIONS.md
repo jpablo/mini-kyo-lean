@@ -745,3 +745,40 @@ Add:
   level as non-duplicate elimination.
 - The next remaining step is consolidating these handler-selection mechanisms
   under one stable public kernel interface.
+
+## ADR-0023: Unify `eliminate` with index-selection kernel (`skip := 0`)
+
+Date: 2026-02-07  
+Status: Accepted
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+
+### Context
+After adding `eliminateAt`, the facade had two runtime kernels:
+- `eliminate` via the older generic removal path
+- `eliminateAt` via occurrence-index selection
+
+This split increased maintenance cost and risk of semantic drift.
+
+### Decision
+- Define `eliminate` using `handleAtIndex` with `skip := 0`.
+- Add `selectSelf` / `selectSelfRow` instances so direct leaf-target removal
+  (`S = target`) remains expressible in the index-selection system.
+
+### Why
+- One elimination runtime path simplifies reasoning and testing.
+- "First occurrence" semantics are explicit and match previous behavior.
+- Keeps row discharge and runtime elimination aligned under one selector family.
+
+### Tradeoffs
+- The facade now depends on `SelectOp`/`SelectOpRow` even for non-duplicate
+  scenarios.
+- `RemoveOp`/`RemoveOpRow` remain in the codebase for now, so there is still
+  transitional overlap at the lower-level kernel.
+
+### Consequences
+- Public elimination APIs now share one generalized engine.
+- Next step is deciding whether and how to retire or reframe the legacy removal
+  evidence classes in the external-facing kernel surface.

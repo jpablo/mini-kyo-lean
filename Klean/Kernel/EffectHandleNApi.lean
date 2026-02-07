@@ -1,4 +1,3 @@
-import Klean.Kernel.EffectHandleNCoupled
 import Klean.Kernel.EffectHandleNSelect
 
 /-!
@@ -16,7 +15,6 @@ namespace EffectHandleNApi
 
 open EffectHandleN
 open EffectHandleNRow
-open EffectHandleNCoupled
 open EffectHandleNSelect
 
 /-- Row-semantic obligations of a stack-typed pending program. -/
@@ -31,21 +29,21 @@ structure Eliminated (target S out A : Type)
   discharge :
     Row.toRowSet (stackRow S) = Row.singletonRowSet target ++ Row.toRowSet (stackRow out)
 
-/-- Eliminate one target effect via the coupled runtime+row step. -/
+/-- Eliminate the first (leftmost) occurrence of one target effect from `S`. -/
 def eliminate
     [EffectSig target] [EffectSig S] [EffectSig out]
     [StackRow S] [StackRow out]
-    [RemoveOp target S out]
-    [RemoveOpRow target S out]
+    [SelectOp target 0 S out]
+    [SelectOpRow target 0 S out]
     (onTarget :
       {X : Type} →
       (op : EffectSig.Op (E := target) X) →
       (EffectSig.Res (E := target) op → Pending1 out A) →
       Pending1 out A)
     (program : Pending1 S A) :
-    Eliminated target S out A :=
-  let step := handleStep (target := target) (S := S) (out := out) onTarget program
-  { program := step.program, discharge := step.discharge }
+    Eliminated target S out A where
+  program := handleAtIndex (target := target) (skip := 0) (S := S) (out := out) onTarget program
+  discharge := stackRow_discharge_at (target := target) (skip := 0) (S := S) (out := out)
 
 /--
 Eliminate the `(skip+1)`-th occurrence of `target` in `S`.

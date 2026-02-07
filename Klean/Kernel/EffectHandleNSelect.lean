@@ -46,6 +46,19 @@ instance selectHereRow [StackRow rest] :
     simpa [stackRow, Row.singleton, Row.append] using
       (Row.Remove.head (effect := target) (tail := stackRow (S := rest)))
 
+@[default_instance 250]
+instance selectSelf [EffectSig target] :
+    SelectOp target 0 target EffectHandleN.VoidEffect where
+  project := fun {X} op =>
+    OpProjection.hit X op (fun out => out)
+
+@[default_instance 250]
+instance selectSelfRow [EffectSig target] :
+    SelectOpRow target 0 target EffectHandleN.VoidEffect where
+  witness := by
+    simpa [stackRow, Row.singleton] using
+      (Row.Remove.head (effect := target) (tail := Row.empty))
+
 @[default_instance 200]
 instance selectSkipTarget
     [EffectSig target] [EffectSig rest] [EffectSig outRest]

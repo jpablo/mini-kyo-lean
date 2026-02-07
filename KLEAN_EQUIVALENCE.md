@@ -223,6 +223,11 @@ A replacement is accepted only when each item has either:
   - `eliminateAt`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
   and `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
+- First-occurrence elimination is now on the same kernel path:
+  - `eliminate` is defined as index elimination with `skip := 0`
+  - `selectSelf`/`selectSelfRow` preserve leaf-target elimination behavior
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+  and `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`

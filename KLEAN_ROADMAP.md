@@ -172,6 +172,11 @@ Acceptance:
     and `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
     via `SelectOpRow`, `stackRow_discharge_at`, and `eliminateAt`, with facade
     validation (`evalFirstAt_spec`, `evalSecondAt_spec`).
+28. [x] Unify first-occurrence elimination with index-selection kernel.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNApi.lean`
+    and `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandleNSelect.lean`
+    by defining `eliminate` via `handleAtIndex` at `skip := 0`, and adding
+    `selectSelf`/`selectSelfRow` so leaf-target elimination remains supported.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.
