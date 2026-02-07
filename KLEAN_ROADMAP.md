@@ -88,6 +88,12 @@ Acceptance:
 6. [x] Add canonical row normalization strategy (or equivalent quotient-style API boundary).
    Implemented quotient-style boundary: `RowSet = Row / ≈` in
    `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Row.lean`.
+7. [x] Port minimal single-effect `ContextEffect` suspend/handle shape.
+   Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ContextEffect.lean`
+   on top of `Pending1`, with effect discharge into closed `Pending _ Row.empty`.
+8. [x] Port minimal single-effect `ArrowEffect` suspend/handle shape.
+   Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ArrowEffect.lean`
+   with generic `suspend`, `suspendWith`, and fold-based elimination into closed `Pending`.
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

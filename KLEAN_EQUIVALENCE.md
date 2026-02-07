@@ -81,7 +81,10 @@ Mechanically possible, but we need normalized row laws to keep type signatures e
 ### Not implemented yet
 
 7. Explicit discharge/remove operation  
-We need a typed “remove one `E` from row” operation with proofs.
+Row-level discharge/remove (`E & S -> S`) is still pending.  
+Single-effect discharge is now implemented in
+`/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ContextEffect.lean`
+via handler elimination into `Pending _ Row.empty`.
 
 8. Canonical equivalence relation for rows  
 Implemented (`Row.SemEq`) and exposed through quotient boundary (`RowSet`), but not yet integrated across all kernel APIs.
@@ -132,6 +135,10 @@ A replacement is accepted only when each item has either:
 - Abort/Env/Var acceptance semantics are validated in
   `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Validation.lean`
   via standalone fuel-bounded interpreters.
-- Main gap: syntactic normalization/canonical form is not yet encoded.
-- Next critical step: move from standalone trio validations to generic
-  `Pending`-based effect suspension/handlers.
+- Generic single-effect suspension/handling bridge is now implemented:
+  - `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ArrowEffect.lean`
+  - `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Pending1.lean`
+  - `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/ContextEffect.lean`
+- Main gaps:
+  - syntactic normalization/canonical form is not yet encoded
+  - row-aware multi-effect handler elimination remains to be integrated with `Pending`.
