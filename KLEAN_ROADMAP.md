@@ -133,6 +133,10 @@ Acceptance:
     Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectReassoc.lean`
     via `handleMiddle` and `handleLast`, with helper-based validation
     (`eval_auto_case1_spec`, `eval_auto_case2_spec`).
+19. [x] Add typeclass-driven handler selection for 3-effect stacks.
+    Implemented in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandle3.lean`
+    via `HandleAt3` + `handleAt3` (head/middle/last instances), with validation
+    (`eval_tc_case1_spec`, `eval_tc_case2_spec`).
 
 ## Non-Goals for Early Phases
 - Reproducing Scala macro behavior exactly.

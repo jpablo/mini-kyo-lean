@@ -419,3 +419,35 @@ Add high-level combinators over right-associated 3-effect stacks:
 ### Consequences
 - Non-head handling has practical reusable APIs now.
 - Next step is deriving these combinators generically from membership evidence.
+
+## ADR-0013: Add typeclass-driven target selection for 3-effect handling
+
+Date: 2026-02-07  
+Status: Accepted (intermediate)
+
+Related:
+- `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandle3.lean`
+
+### Context
+After introducing `handleMiddle` and `handleLast`, call sites still had to pick
+the right combinator manually based on effect position.
+
+### Decision
+Introduce `HandleAt3` and `handleAt3`:
+- head instance uses direct `handleLeft`
+- middle instance uses `EffectReassoc.handleMiddle`
+- last instance uses `EffectReassoc.handleLast`
+
+### Why
+- Moves handler-path choice into typeclass resolution.
+- Keeps runtime behavior explicit while improving API ergonomics.
+- Provides a prototype for future n-ary target-selection abstractions.
+
+### Tradeoffs
+- Current scope is right-associated 3-effect stacks.
+- Ambiguity can arise if the same effect type appears multiple times.
+
+### Consequences
+- 3-effect handler call sites can target effects declaratively.
+- Next step is lifting this pattern to generalized n-ary stacks with explicit
+  duplicate-handling policy.

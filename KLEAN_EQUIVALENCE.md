@@ -182,6 +182,10 @@ A replacement is accepted only when each item has either:
   - `handleMiddle`
   - `handleLast`
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectReassoc.lean`.
+- Typeclass-driven 3-effect target handling now exists:
+  - `HandleAt3`
+  - `handleAt3`
+  in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/EffectHandle3.lean`.
 - Row-aware 2-effect composition now exists:
   - `handleTwoRemoved`
   - `handleTwoRemoved_obligations`
@@ -194,4 +198,4 @@ A replacement is accepted only when each item has either:
   in `/Users/jpablo/proyectos/experimentos/mini-kyo-lean/Klean/Kernel/Discharge3.lean`.
 - Main gaps:
   - syntactic normalization/canonical form is not yet encoded
-  - general n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending` (current n=2/3 runtime and proof composition exists, n-ary injection foundation exists, and re-association transforms exist, but generic n-ary handling/removal synthesis is still pending).
+  - general n-ary row-indexed multi-effect dispatch/elimination remains to be integrated with `Pending` (current n=2/3 runtime and proof composition exists, plus 3-effect handler selection abstraction, but generic n-ary handling/removal synthesis is still pending).
